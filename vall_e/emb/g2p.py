@@ -51,8 +51,8 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
+    main()
 
-    input = "Hello, split to phonemes"
-    input_heb = "היי מה קורה"
-    print(encode(input_heb))
+    # input = "Hello, split to phonemes"
+    # input_heb = "היי מה קורה"
+    # print(encode(input_heb))
