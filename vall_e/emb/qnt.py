@@ -1,5 +1,7 @@
 import argparse
+import os
 import random
+import sys
 from functools import cache
 from pathlib import Path
 
@@ -11,6 +13,8 @@ from encodec import EncodecModel
 from encodec.utils import convert_audio
 from torch import Tensor
 from tqdm import tqdm
+
+print(sys.path)
 
 from ..config import cfg
 
