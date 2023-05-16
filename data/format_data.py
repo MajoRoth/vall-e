@@ -23,9 +23,9 @@ def format_data(data_path, output_path):
     data_frame = pd.read_csv(os.path.join(data_path, "metadata.csv"), encoding="utf-8", sep='|')
 
     for index, row in data_frame.iterrows():
-        with open(os.path.join(output_path, f"{row['file_id']}.normalized.txt"), 'w') as txt_file:
+        with open(os.path.join(output_path, f"{row[0]}.normalized.txt"), 'w') as txt_file:
             txt_file.write(
-                remove_nikud(row['transcript'])
+                remove_nikud(row[1])
             )
             txt_file.close()
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
         output_path = sys.argv[2]
     else:
         data_path = "/Users/amitroth/Data/hayot_kis/saspeech_gold_standard"
-        output_path = "/cs/labs/adiyoss/amitroth/vall-e/data/saspeech"
+        output_path = "./saspeech"
 
     format_data(data_path, output_path)
 
