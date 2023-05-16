@@ -32,8 +32,18 @@ def format_data(data_path, output_path):
 
 if __name__ == "__main__":
     if len(sys.argv) == 3:
+        print("Given 3")
         data_path = sys.argv[1]
         output_path = sys.argv[2]
     else:
         data_path = "/Users/amitroth/Data/hayot_kis/saspeech_gold_standard"
-        output_path = "./saspeech"
+        output_path = "/cs/labs/adiyoss/amitroth/vall-e/data/saspeech"
+
+    format_data(data_path, output_path)
+
+
+"""
+/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard
+/cs/dataset/Download/adiyoss/heb_data/saspeech_valle
+
+"""
