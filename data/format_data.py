@@ -20,7 +20,7 @@ def remove_nikud(text: str):
 
 
 def format_data(data_path, output_path):
-    data_frame = pd.read_csv(os.path.join(data_path, "metadata.csv"), encoding="utf-8", sep='|')
+    data_frame = pd.read_csv(os.path.join(data_path, "metadata.csv"), encoding="utf-8", sep='|', header=None)
 
     for index, row in data_frame.iterrows():
         with open(os.path.join(output_path, f"{row[0]}.normalized.txt"), 'w') as txt_file:
