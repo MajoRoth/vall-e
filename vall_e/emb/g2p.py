@@ -7,7 +7,7 @@ from pathlib import Path
 import torch
 from g2p_en import G2p
 from tqdm import tqdm
-from tokenize_hebrew import TokenizeHebrew
+from .tokenize_hebrew import TokenizeHebrew
 
 
 @cache

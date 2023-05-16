@@ -14,8 +14,6 @@ from encodec.utils import convert_audio
 from torch import Tensor
 from tqdm import tqdm
 
-print(sys.path)
-
 from ..config import cfg
 
 
