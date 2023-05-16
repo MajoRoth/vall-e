@@ -82,18 +82,15 @@ def main():
     parser.add_argument("--suffix", default=".wav")
     args = parser.parse_args()
 
-    print(args.suffix)
     paths = [*args.folder.rglob(f"*{args.suffix}")]
     random.shuffle(paths)
-    print(paths)
 
     for path in tqdm(paths):
-        print(path)
         out_path = _replace_file_extension(path, ".qnt.pt")
         if out_path.exists():
+            print("File Exists")
             continue
         qnt = encode_from_file(path)
-        print(qnt)
         torch.save(qnt.cpu(), out_path)
 
 
