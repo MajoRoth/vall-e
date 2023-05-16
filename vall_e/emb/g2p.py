@@ -7,11 +7,13 @@ from pathlib import Path
 import torch
 from g2p_en import G2p
 from tqdm import tqdm
+from tokenize_hebrew import TokenizeHebrew
 
 
 @cache
 def _get_model():
-    return G2p()
+    # return G2p()
+    return TokenizeHebrew()
 
 
 @cache
@@ -49,4 +51,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+
+    input = "Hello, split to phonemes"
+    input_heb = "היי מה קורה"
+    print(encode(input_heb))
