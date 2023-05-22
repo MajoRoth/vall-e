@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -c 8
-#SBATCH --mem=32
+#SBATCH --mem=32g
 #SBATCH --time=2-0
 #SBATCH --gres=gpu:1,vmem:16g
 #SBATCH --exclude=gsm-04
