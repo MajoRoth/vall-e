@@ -1,19 +1,16 @@
-#!/bin/zsh
+#!/bin/bash
 #SBATCH -c 8
 #SBATCH --mem=20g
 #SBATCH --time=2-0
-#SBATCH --gres=gpu:1,vmem:10g
-## 0-9%4 limits to 4 jobs symultanously, 0-9:4 will run jobs 0,4,8
-#SBATCH --array=0-19%5
+#SBATCH --gres=gpu:1,vmem:16g
 #SBATCH --exclude=gsm-04
-##SBATCH --killable
-##SBATCH --requeue
 
-dir=/cs/labs/daphna/avihu.dekel/FixMatch-pytorch
+dir=/cs/labs/adiyoss/amitroth/vall-e
 cd $dir
 
-source /cs/usr/avihu.dekel/.zshrc
-conda activate inari
-module load torch
-module load nvidia
-python3 runner_fixmatch.py --id ${SLURM_ARRAY_TASK_ID}
+conda activate vall-e
+module load cuda/11.7
+module load cudnn
+
+python -m vall_e.train yaml=config/saspeech/ar.yml
+
