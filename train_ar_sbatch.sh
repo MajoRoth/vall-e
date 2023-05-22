@@ -9,6 +9,9 @@ dir=/cs/labs/adiyoss/amitroth/vall-e
 cd $dir
 
 conda activate vall-e
+conda info | egrep "conda version|active environment"
+
+
 module load cuda/11.7
 module load cudnn
 
