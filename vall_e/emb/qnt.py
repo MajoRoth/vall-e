@@ -14,7 +14,7 @@ from encodec.utils import convert_audio
 from torch import Tensor
 from tqdm import tqdm
 
-from vall_e.config import cfg
+from ..config import cfg
 
 @cache
 def _load_model(device="cuda"):

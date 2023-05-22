@@ -4,8 +4,8 @@ from pathlib import Path
 import torch
 from einops import rearrange
 
-from emb import g2p, qnt
-from utils import to_device
+from .emb import g2p, qnt
+from .utils import to_device
 
 
 def main(text=None, reference=None, out_path=None, ar_ckpt=None, nar_ckpt=None, device=None):
