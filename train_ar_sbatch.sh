@@ -10,6 +10,7 @@ cd $dir
 
 conda activate vall-e
 conda info | egrep "conda version|active environment"
+echo "ar"
 
 
 module load cuda/11.7
