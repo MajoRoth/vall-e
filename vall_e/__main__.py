@@ -8,7 +8,7 @@ from .emb import g2p, qnt
 from .utils import to_device
 
 
-def main():
+def main(text=None, reference=None, out_path=None, ar_ckpt=None, nar_ckpt=None, device=None):
     parser = argparse.ArgumentParser("VALL-E TTS")
     parser.add_argument("text")
     parser.add_argument("reference", type=Path)
@@ -17,6 +17,14 @@ def main():
     parser.add_argument("--nar-ckpt", type=Path, default="zoo/nar.pt")
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
+
+    text = args.text
+    reference = args.reference
+    out_path = args.out_path
+    ar_ckpt = args.ar_ckpt
+    nar_ckpt = args.nar_ckpt
+    device = args.device
+
     print(args)
 
     ar = torch.load(args.ar_ckpt).to(args.device)
@@ -41,4 +49,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(text="היי מה קורה, זו הקלטה שיוצרה מעברית", reference=None, out_path="/output/",
+         ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/ar/model/default/mp_rank_00_model_states.pt",
+         device="cuda")
