@@ -17,6 +17,7 @@ def main():
     parser.add_argument("--nar-ckpt", type=Path, default="zoo/nar.pt")
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
+    print(args)
 
     ar = torch.load(args.ar_ckpt).to(args.device)
     nar = torch.load(args.nar_ckpt).to(args.device)
