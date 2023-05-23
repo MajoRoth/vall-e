@@ -55,3 +55,10 @@ if __name__ == "__main__":
          ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/ar/model/default/mp_rank_00_model_states.pt",
          nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/nar/model/default/mp_rank_00_model_states.pt",
          device="cuda")
+
+    main(text="בראשית בראה אלוהים את השמים והארץ, והארץ היתה תוהו ובוהו, וחושך על פני תהום",
+         reference="/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/reference.wav",
+         out_path="/cs/labs/adiyoss/amitroth/vall-e/output/saspeech/out.wav",
+         ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/ar/model/default/mp_rank_00_model_states.pt",
+         nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/nar/model/default/mp_rank_00_model_states.pt",
+         device="cuda")
