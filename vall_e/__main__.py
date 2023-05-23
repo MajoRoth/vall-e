@@ -50,7 +50,7 @@ def main(text=None, reference=None, out_path=None, ar_ckpt=None, nar_ckpt=None, 
 
 if __name__ == "__main__":
     main(text="היי מה קורה, זו הקלטה שיוצרה מעברית",
-         reference="/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/ref.wav",
+         reference="/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/reference.wav",
          out_path="/output/",
          ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/ar/model/default/mp_rank_00_model_states.pt",
          nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/nar/model/default/mp_rank_00_model_states.pt",
