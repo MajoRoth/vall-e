@@ -12,6 +12,7 @@ cd $dir
 conda activate vall-e
 conda info | egrep "conda version|active environment"
 echo "nar"
+python --version
 
 module load cuda/11.7
 module load cudnn
