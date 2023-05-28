@@ -1,8 +1,9 @@
 #!/bin/bash
-#SBATCH -c 8
+#SBATCH --job-name=train_ar
+#SBATCH -c 16
 #SBATCH --mem=32g
 #SBATCH --time=2-0
-#SBATCH --gres=gpu:1,vmem:16g
+#SBATCH --gres=gpu:1,vmem:24
 #SBATCH --exclude=gsm-04
 
 dir=/cs/labs/adiyoss/amitroth/vall-e
