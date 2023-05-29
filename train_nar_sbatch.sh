@@ -9,7 +9,7 @@
 dir=/cs/labs/adiyoss/amitroth/vall-e
 cd $dir
 
-source /cs/labs/adiyoss/amitroth/anaconda3/etc/profile.d/conda.csh
+source /cs/labs/adiyoss/amitroth/anaconda3/etc/profile.d/conda.sh
 conda activate vall-e
 conda info | egrep "conda version|active environment"
 echo "nar"
