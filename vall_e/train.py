@@ -19,6 +19,7 @@ def load_engines():
     print("----- DEBUG ------")
     print(type(model))
     print(model)
+    print(model.keys())
 
     engines = dict(
         model=trainer.Engine(
