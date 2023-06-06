@@ -8,6 +8,6 @@ module load tensorflow-all
 
 conda activate vall-e
 
-echo "Starting ${logdir} on port ${port}."
+echo "Starting runs on port 16006."
 
-tensorboard --logdir=$logdir --port=$port
+tensorboard --logdir=runs --port=16006
