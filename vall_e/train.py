@@ -16,6 +16,9 @@ _logger = logging.getLogger(__name__)
 
 def load_engines():
     model = get_model(cfg.model)
+    print("----- DEBUG ------")
+    print(type(model))
+    print(model)
 
     engines = dict(
         model=trainer.Engine(
