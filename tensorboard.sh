@@ -11,4 +11,4 @@ cd /cs/labs/adiyoss/amitroth/vall-e
 
 echo "Starting runs on port 16006."
 
-tensorboard --logdir=runs --port=16006
+tensorboard --logdir=runs --port=16005
