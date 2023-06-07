@@ -52,5 +52,5 @@ def main():
 
     print("SENT TO WRITER")
 
-if __name__ == "_main__":
+if __name__ == "__main__":
     main()
