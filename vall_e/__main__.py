@@ -51,9 +51,9 @@ def main(text=None, reference=None, out_path=None, ar_ckpt=None, nar_ckpt=None, 
 if __name__ == "__main__":
     main(text="אני אוהב מאוד לאכול מעדן תות",
          reference="/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/reference.wav",
-         out_path="/cs/labs/adiyoss/amitroth/vall-e/output/saspeech/out1.wav",
-         ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/ar/model/default/mp_rank_00_model_states.pt",
-         nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/nar/model/default/mp_rank_00_model_states.pt",
+         out_path="/cs/labs/adiyoss/amitroth/vall-e/output/saspeech/out_new.wav",
+         ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/ar.pt",
+         nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/nar.pt",
          device="cuda")
 
     main(text="אני עכשיו משלם אצל המוכרת בסופר",
