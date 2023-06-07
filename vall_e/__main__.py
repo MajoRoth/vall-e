@@ -26,7 +26,9 @@ def main(text=None, reference=None, out_path=None, ar_ckpt=None, nar_ckpt=None, 
         nar_ckpt = args.nar_ckpt
         device = args.device
 
-
+    aa = torch.load(ar_ckpt)
+    print(aa)
+    print(type(aa))
     ar = torch.load(ar_ckpt).to(device)
     nar = torch.load(nar_ckpt).to(device)
 
