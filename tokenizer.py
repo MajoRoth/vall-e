@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import string
 
+import torch
 from transformers import BertModel, BertTokenizerFast
 
 
@@ -43,20 +44,26 @@ class TokenizeByLettersAlephBert(Tokenizer):
 
 
     def tokenize(self, input: str):
+        """
+            tokenize the sentence with AlephBert vectors.
+            the vectors of the model are placed after each word letter tokens.
+            output: <vec cls> <l1> <l2> <l3> <l4> <vec w1> <l5> <l6> <l7> <vec 2w>
+        """
         clean_input = HebrewTextUtils.clean_punctuation(input)
+        words = clean_input.split()
         self.alephbert.eval()
-        for i in range(len(clean_input.split())):
-            input = self.alephbert_tokenizer(clean_input, return_tensors="pt", position_ids=i)
-            outputs = self.alephbert(**input)
-            last_hidden_states = outputs.last_hidden_state
-            print(last_hidden_states)
+        input = self.alephbert_tokenizer(clean_input, return_tensors="pt")
+        outputs = self.alephbert(**input)
+        last_hidden_states = outputs.last_hidden_state[0]
 
-        last_hidden_states = outputs.last_hidden_state
-        print(last_hidden_states.size())
-        print(last_hidden_states)
-        letter_tokens = [x for x in clean_input]
-        tokens = last_hidden_states.tolist() + letter_tokens
-        print(tokens)
+        tokens = [last_hidden_states[0].tolist()]
+
+        for i in range(len(words)):
+            tokens += [x for x in words[i]]
+            tokens.append(
+                last_hidden_states[i+1]
+            )
+
         return tokens
 
 
@@ -86,5 +93,6 @@ class HebrewTextUtils:
 if __name__ == "__main__":
     tokenizer = TokenizeByLettersAlephBert()
     tokenizer.tokenize("היי מה קורה")
+    # tokenizer.tokenize("היי מה שלומך")
     # tokenizer.tokenize("היי")
     # tokenizer.tokenize("ביי")
