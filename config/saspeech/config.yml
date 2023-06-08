@@ -1,0 +1,12 @@
+
+
+# For inference
+output_path: "/cs/labs/adiyoss/amitroth/vall-e/output/saspeech"
+ar_ckpt_path: "/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/ar.pt"
+nar_ckpt_path: "/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/nar.pt"
+reference_path: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/reference.wav"
+
+
+# For ckpts
+latest_ar_path: "/cs/labds/adiyoss/amitroth/vall-e/ckpts/saspeech/ar/model/latest"
+latest_nar_path: "/cs/labds/adiyoss/amitroth/vall-e/ckpts/saspeech/nar/model/latest"
