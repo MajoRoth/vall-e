@@ -32,12 +32,17 @@ def main():
 
             if latest_ar_current_value != latest_ar:
                 os.system(f"python -m vall_e.export {yaml_cfg.ar_ckpt_path} yaml=config/saspeech/ar.yml")
+                print(" ")
                 print(f"EXPORTED AR {latest_ar_current_value}")
+                print(" ")
 
                 latest_ar = latest_ar_current_value
                 new_ar_ckpt = True
         else:
+            print(" ")
             print(f"path does not exist {yaml_cfg.latest_ar_path}")
+            print(" ")
+
 
 
         if os.path.isfile(yaml_cfg.latest_nar_path):  # Check for new nar ckpt
@@ -46,12 +51,18 @@ def main():
 
             if latest_nar_current_value != latest_nar:
                 os.system(f"python -m vall_e.export {yaml_cfg.nar_ckpt_path} yaml=config/saspeech/nar.yml")
+                print(" ")
                 print(f"EXPORTED NAR {latest_nar_current_value}")
+                print(" ")
 
                 latest_nar = latest_nar_current_value
                 new_nar_ckpt = True
         else:
+            print(" ")
+
             print(f"path does not exist {yaml_cfg.latest_ar_path}")
+            print(" ")
+
 
 
         if new_ar_ckpt and new_nar_ckpt:  # Create wav from 2 new ckpts
