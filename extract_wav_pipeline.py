@@ -76,6 +76,7 @@ def main():
             print(f"CREATED WAV test_{ckpt_number}")
             wav, sr = torchaudio.load(f"{yaml_cfg.output_path}/test_{ckpt_number}.wav")
             print(f"LOADED WAV test_{ckpt_number}")
+            print(wav)
             _writer.add_audio(tag=f"{yaml_cfg.output_path}/test_{ckpt_number}.wav", snd_tensor=wav,
                               sample_rate=sr)
             print("SENT TO TENSOR BOARD")
