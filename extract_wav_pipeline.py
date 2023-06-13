@@ -69,6 +69,7 @@ def main():
 
         if new_ar_ckpt and new_nar_ckpt:  # Create wav from 2 new ckpts
             ckpt_counter += 1
+            print(f"new ckpt {ckpt_counter}")
             new_ar_ckpt = False
             new_nar_ckpt = False
 
@@ -97,7 +98,6 @@ def main():
 
                 print("SENT TO TENSOR BOARD")
 
-        print("loop")
 
 
 
