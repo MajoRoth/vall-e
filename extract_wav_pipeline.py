@@ -90,6 +90,11 @@ def main():
             print(wav)
             _writer.add_audio(tag=f"{ckpt_number}", snd_tensor=wav,
                               sample_rate=sr)
+
+            _writer.add_audio(tag=f"{ckpt_number}aa", snd_tensor=wav,
+                              sample_rate=sr)
+
+            _writer.add_text("text", "wav added to tensorboard", global_step=None, walltime=None)
             print("SENT TO TENSOR BOARD")
 
         time.sleep(1)
