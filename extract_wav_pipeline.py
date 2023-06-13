@@ -24,6 +24,8 @@ def main():
     latest_nar = None
     new_nar_ckpt = False
 
+    ckpt_counter = 0
+
 
     while True:
         if os.path.isfile(yaml_cfg.latest_ar_path):  # Check for new ar ckpt
@@ -66,39 +68,36 @@ def main():
 
 
         if new_ar_ckpt and new_nar_ckpt:  # Create wav from 2 new ckpts
+            ckpt_counter += 1
             new_ar_ckpt = False
             new_nar_ckpt = False
 
-            try:
-                ckpt_number = int(latest_ar.split('_')[1])
-            except Exception as e:
-                print(e)
-                ckpt_number = 99999
-
             sentence = "היי, זה משפט לדוגמא כדי שאני אשמע אם המודל מדבר טוב"
 
-            main_test(text=sentence,
-                      reference=yaml_cfg.reference_path,
-                      out_path=f"{yaml_cfg.output_path}/test_{ckpt_number}.wav",
-                      ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/ar.pt",
-                      nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/nar.pt",
-                      device="cuda")
+            for ref in [yaml_cfg.reference_path_hayot, yaml_cfg.reference_path_amit, yaml_cfg.reference_path_shahar]:
+                file_name = ref.split("/")[-1]
+                file_name_without_wav = file_name.split(".")[0]
+                wav_name = f"test_{file_name_without_wav}_{ckpt_counter}.wav"
+                output_path = f"{yaml_cfg.output_path}/{wav_name}"
 
-            print(f"CREATED WAV test_{ckpt_number}")
-            wav, sr = torchaudio.load(f"{yaml_cfg.output_path}/test_{ckpt_number}.wav")
-            print(f"LOADED WAV test_{ckpt_number}")
-            print(wav)
-            _writer.add_audio(tag=f"{ckpt_number}", snd_tensor=wav,
-                              sample_rate=sr)
+                main_test(text=sentence,
+                          reference=yaml_cfg.reference_path_hayot,
+                          out_path=output_path,
+                          ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/ar.pt",
+                          nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/nar.pt",
+                          device="cuda")
 
-            _writer.add_audio(tag=f"{ckpt_number}aa", snd_tensor=wav,
-                              sample_rate=sr)
 
-            _writer.add_text("text", "wav added to tensorboard", global_step=None, walltime=None)
-            print("SENT TO TENSOR BOARD")
+                print(f"CREATED WAV test_{file_name_without_wav}_{ckpt_counter}")
+                wav, sr = torchaudio.load(f"{yaml_cfg.output_path}/{output_path}.wav")
 
-        time.sleep(1)
+                print(f"LOADED WAV {output_path}")
+                _writer.add_audio(tag=f"{output_path}", snd_tensor=wav,
+                                  sample_rate=sr)
 
+                print("SENT TO TENSOR BOARD")
+
+        print("loop")
 
 
 

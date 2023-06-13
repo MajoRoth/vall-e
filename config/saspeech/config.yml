@@ -4,7 +4,10 @@
 output_path: "/cs/labs/adiyoss/amitroth/vall-e/output/saspeech"
 ar_ckpt_path: "/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/ar.pt"
 nar_ckpt_path: "/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/nar.pt"
-reference_path: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/reference.wav"
+reference_path_hayot: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/hayot.wav"
+reference_path_amit: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/amit.wav"
+reference_path_shahar: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/shahar.wav"
+
 
 
 # For ckpts
