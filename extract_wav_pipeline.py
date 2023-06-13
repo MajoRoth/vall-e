@@ -89,7 +89,7 @@ def main():
 
 
                 print(f"CREATED WAV test_{file_name_without_wav}_{ckpt_counter}")
-                wav, sr = torchaudio.load(f"{yaml_cfg.output_path}/{output_path}.wav")
+                wav, sr = torchaudio.load(f"{yaml_cfg.output_path}/{output_path}")
 
                 print(f"LOADED WAV {output_path}")
                 _writer.add_audio(tag=f"{output_path}", snd_tensor=wav,
