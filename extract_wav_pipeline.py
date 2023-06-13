@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime
 
 import torchaudio
@@ -35,6 +36,9 @@ def main():
 
                 latest_ar = latest_ar_current_value
                 new_ar_ckpt = True
+        else:
+            print(f"path does not exist {yaml_cfg.latest_ar_path}")
+
 
         if os.path.isfile(yaml_cfg.latest_nar_path):  # Check for new nar ckpt
             f = open(yaml_cfg.latest_nar_path, 'r')
@@ -46,6 +50,8 @@ def main():
 
                 latest_nar = latest_nar_current_value
                 new_nar_ckpt = True
+        else:
+            print(f"path does not exist {yaml_cfg.latest_ar_path}")
 
 
         if new_ar_ckpt and new_nar_ckpt:  # Create wav from 2 new ckpts
@@ -73,6 +79,8 @@ def main():
             _writer.add_audio(tag=f"{yaml_cfg.output_path}/test_{ckpt_number}.wav", snd_tensor=wav,
                               sample_rate=sr)
             print("SENT TO TENSOR BOARD")
+
+        time.sleep(1)
 
 
 
