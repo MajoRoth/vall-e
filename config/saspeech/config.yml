@@ -8,5 +8,5 @@ reference_path: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/saspeech/refere
 
 
 # For ckpts
-latest_ar_path: "/cs/labds/adiyoss/amitroth/vall-e/ckpts/saspeech/ar/model/latest"
-latest_nar_path: "/cs/labds/adiyoss/amitroth/vall-e/ckpts/saspeech/nar/model/latest"
+latest_ar_path: "/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/ar/model/latest"
+latest_nar_path: "/cs/labs/adiyoss/amitroth/vall-e/ckpts/saspeech/nar/model/latest"
