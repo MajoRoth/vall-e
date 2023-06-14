@@ -24,9 +24,6 @@ def main():
     latest_nar = None
     new_nar_ckpt = False
 
-    ckpt_counter = 0
-
-
     while True:
         if os.path.isfile(yaml_cfg.latest_ar_path):  # Check for new ar ckpt
             f = open(yaml_cfg.latest_ar_path, 'r')
@@ -68,8 +65,14 @@ def main():
 
 
         if new_ar_ckpt and new_nar_ckpt:  # Create wav from 2 new ckpts
-            ckpt_counter += 1
-            print(f"new ckpt {ckpt_counter}")
+            try:
+                ckpt_name = latest_ar.split('_')[1]
+            except Exception as e:
+                print(f"\nCouldnt deine ckpt_name. latest_ar ckpt is {latest_ar}.\n")
+                ckpt_name = 'default'
+
+
+            print(f"new ckpt {ckpt_name}")
             new_ar_ckpt = False
             new_nar_ckpt = False
 
@@ -78,7 +81,7 @@ def main():
             for ref in [yaml_cfg.reference_path_hayot, yaml_cfg.reference_path_amit, yaml_cfg.reference_path_shahar]:
                 file_name = ref.split("/")[-1]
                 file_name_without_wav = file_name.split(".")[0]
-                wav_name = f"test_{file_name_without_wav}_{ckpt_counter}.wav"
+                wav_name = f"test_{file_name_without_wav}_{ckpt_name}.wav"
                 output_path = f"{yaml_cfg.output_path}/{wav_name}"
 
                 main_test(text=sentence,
@@ -89,7 +92,7 @@ def main():
                           device="cuda")
 
 
-                print(f"CREATED WAV test_{file_name_without_wav}_{ckpt_counter}")
+                print(f"CREATED WAV test_{file_name_without_wav}_{ckpt_name}")
                 wav, sr = torchaudio.load(output_path)
 
                 print(f"LOADED WAV {wav_name}")
