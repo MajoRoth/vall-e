@@ -3,6 +3,8 @@ import shutil
 from enum import Enum
 from typing import List, Tuple, Generic, Type
 from pathlib import Path
+import whisper
+
 
 import pandas as pd
 import torch
@@ -12,8 +14,8 @@ from tokenizer import Tokenizer, TokenizeByLetters, HebrewTextUtils
 from vall_e.emb.g2p import _get_graphs
 from vall_e.emb.qnt import _replace_file_extension, encode_from_file
 
-class Dataset:
 
+class Dataset:
     def __init__(self, name: str, absolute_path: str,
                  metadata_path: str = "metadata.csv",
                  wav_path: str = ""):
@@ -24,6 +26,30 @@ class Dataset:
 
         self.absolute_metadata_path = os.path.join(self.absolute_path, self.metadata_path)
         self.absolute_wav_path = os.path.join(self.absolute_path, self.wav_path)
+
+        if not os.path.isfile(self.absolute_metadata_path):
+            raise Exception("metadata.csv path is invalid")
+
+        if not os.path.exists(self.absolute_wav_path):
+            raise Exception("wav folder path is invalid")
+
+    def create_metadata(self):
+        # if os.path.isfile(self.absolute_metadata_path):
+        #     raise Exception("metadata.csv file exists, are you sure you want to overwrite it?")
+
+        model = whisper.load_model("large-v2")
+        output = list()
+
+        paths = list(Path(self.absolute_wav_path).rglob(f"*.wav"))
+        for path in tqdm(paths):
+            result = model.transcribe(path, language='Hebrew')['text']
+            print(f"{os.path.split(path)[1]} - {result}")
+            output.append(
+                {'file': os.path.split(path)[1], 'text': result}
+            )
+
+        print("\nDone\n")
+        print(output)
 
 
 class PrepareData:
@@ -48,8 +74,6 @@ class PrepareData:
     """
 
 
-
-
     """
         data_folders_list = List of tuples containing metadata.csv path, and wav folder path.
     """
@@ -57,7 +81,6 @@ class PrepareData:
         self.processed_data_absolute_path = processed_data_absolute_path
         self.dataset_list = dataset_list
         self.tokenizer = tokenizer
-        pass
 
 
 
@@ -126,16 +149,23 @@ class PrepareData:
 
 if __name__ == "__main__":
 
-    dataset_list = [
-        Dataset(name="hayot-kis", absolute_path="/Users/amitroth/Data/hayot_kis/saspeech_gold_standard",
-                metadata_path="metadata.csv", wav_path="wavs_24k/")
-    ]
+    # dataset_list = [
+    #     Dataset(name="hayot-kis", absolute_path="/Users/amitroth/Data/hayot_kis/saspeech_gold_standard",
+    #             metadata_path="metadata.csv", wav_path="wavs_24k/")
+    # ]
 
-    prepare_data = PrepareData(
-        processed_data_absolute_path="/Users/amitroth/Data/ready",
-        dataset_list=dataset_list,
-        tokenizer=TokenizeByLetters
-    )
 
-    prepare_data.execute_in_series()
+    # Make sure before preparing the data the every folder has a metadata.csv file, and if not, create using Whisper.
+    # prepare_data = PrepareData(
+    #     processed_data_absolute_path="/Users/amitroth/Data/ready",
+    #     dataset_list=dataset_list,
+    #     tokenizer=TokenizeByLetters
+    # )
+    #
+    # prepare_data.execute_in_series()
+
+    dataset = Dataset(name="hayot-kis", absolute_path="/Users/amitroth/Data/hayot_kis/saspeech_gold_standard",
+                 metadata_path="metadata.csv", wav_path="wavs_24k/")
+
+    dataset.create_metadata()
 
