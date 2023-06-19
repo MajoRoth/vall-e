@@ -80,6 +80,8 @@ class Mp3Dataset(Dataset):
         mp3_paths = list(Path(self.mp3_files_absolute_path).rglob(f"*.mp3"))
         for i, path in tqdm(enumerate(mp3_paths)):
             sound = AudioSegment.from_mp3(path)
+            print(sound.duration_seconds)
+            print(type(sound))
             # sound.export(
             #     os.path.join(self.absolute_wav_path, f"{self.name}-{i}.wav"),
             #     format="wav")
