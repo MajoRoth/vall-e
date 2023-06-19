@@ -57,6 +57,14 @@ class Mp3Dataset(Dataset):
     """
 
     def __init__(self, name: str, absolute_path: str, mp3_files_absolute_path: str, metadata_path: str = "metadata.csv", wav_path: str = ""):
+        if not os.path.exists(absolute_path):
+            # create folder of the dataset
+            os.makedirs(absolute_path)
+
+        if not os.path.exists(os.path.join(absolute_path, wav_path)):
+            # create folder of the dataset
+            os.makedirs(os.path.join(absolute_path, wav_path))
+
         super().__init__(name, absolute_path, metadata_path, wav_path)
         self.mp3_files_absolute_path = mp3_files_absolute_path
 
@@ -66,13 +74,7 @@ class Mp3Dataset(Dataset):
             convert mp3 to wav
             create metadata csv file
         """
-        if not os.path.exists(self.absolute_path):
-            # create folder of the dataset
-            os.makedirs(self.absolute_path)
 
-        if not os.path.exists(self.absolute_wav_path):
-            # create folder of the dataset
-            os.makedirs(self.absolute_wav_path)
 
         mp3_paths = list(Path(self.mp3_files_absolute_path).rglob(f"*.mp3"))
         for i, path in tqdm(enumerate(mp3_paths)):
