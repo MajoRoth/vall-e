@@ -5,6 +5,7 @@ from enum import Enum
 from typing import List, Tuple, Generic, Type
 from pathlib import Path
 import whisper
+from pydub import AudioSegment
 
 
 import pandas as pd
@@ -34,7 +35,7 @@ class Dataset:
         if not os.path.exists(self.absolute_wav_path):
             raise Exception(f"wav folder path: {self.absolute_wav_path} is invalid")
 
-    def create_metadata(self):
+    def create_metadata_from_wav(self):
         # if os.path.isfile(self.absolute_metadata_path):
         #     raise Exception("metadata.csv file exists, are you sure you want to overwrite it?")
 
@@ -42,7 +43,6 @@ class Dataset:
 
         # metadata = open(self.absolute_metadata_path + "_debug", mode='w')
         # writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
 
         paths = list(Path(self.absolute_wav_path).rglob(f"*.wav"))
         for path in tqdm(paths):
@@ -52,6 +52,43 @@ class Dataset:
 
         # metadata.close()
         print("\nDone\n")
+
+
+class Mp3Dataset(Dataset):
+    """
+        Suitable for datasets which contains only folders of mp3 files
+    """
+
+    def __init__(self, name: str, absolute_path: str, mp3_files_absolute_path: str, metadata_path: str = "metadata.csv", wav_path: str = ""):
+        super().__init__(name, absolute_path, metadata_path, wav_path)
+        self.mp3_files_absolute_path = mp3_files_absolute_path
+
+    def orgainze_dataset(self):
+        """
+            orgainze all of the mp3 files into 1 folder
+            convert mp3 to wav
+            create metadata csv file
+        """
+        if not os.path.exists(self.absolute_path):
+            # create folder of the dataset
+            os.makedirs(self.absolute_path)
+
+        if not os.path.exists(self.absolute_wav_path):
+            # create folder of the dataset
+            os.makedirs(self.absolute_wav_path)
+
+        mp3_paths = list(Path(self.mp3_files_absolute_path).rglob(f"*.mp3"))
+        for i, path in tqdm(enumerate(mp3_paths)):
+            sound = AudioSegment.from_mp3(path)
+            sound.export(
+                os.path.join(self.absolute_wav_path, f"{i}.wav"),
+                format="wav")
+
+            print(f"exported {path}")
+
+        print("finished")
+
+        self.create_metadata_from_wav()
 
 
 class PrepareData:
@@ -75,16 +112,15 @@ class PrepareData:
         6. create file.phn.txt and file.qnt.pt using vall-e's bult in scripts
     """
 
-
     """
         data_folders_list = List of tuples containing metadata.csv path, and wav folder path.
     """
-    def __init__(self, processed_data_absolute_path: str, dataset_list: List[Dataset], tokenizer: Type[Tokenizer] = TokenizeByLetters):
+
+    def __init__(self, processed_data_absolute_path: str, dataset_list: List[Dataset],
+                 tokenizer: Type[Tokenizer] = TokenizeByLetters):
         self.processed_data_absolute_path = processed_data_absolute_path
         self.dataset_list = dataset_list
         self.tokenizer = tokenizer
-
-
 
     def move_wav_files(self):
         print("--- Moving Wav Files ---")
@@ -96,7 +132,6 @@ class PrepareData:
                 file_name = os.path.split(path)[1]
                 shutil.copyfile(path, os.path.join(self.processed_data_absolute_path, f"{dataset.name}-{file_name}"))
 
-
     def create_normalized_txt_files(self):
         print("Creating Normalized Text Files")
         for dataset in self.dataset_list:
@@ -105,12 +140,12 @@ class PrepareData:
             print(f"Tokenizing {data_folder_name}")
 
             for index, row in data_frame.iterrows():
-                with open(os.path.join(self.processed_data_absolute_path, f"{dataset.name}-{row[0]}.normalized.txt"), 'w') as txt_file:
+                with open(os.path.join(self.processed_data_absolute_path, f"{dataset.name}-{row[0]}.normalized.txt"),
+                          'w') as txt_file:
                     txt_file.write(
                         HebrewTextUtils.remove_nikud(row[1])
                     )
                     txt_file.close()
-
 
     def create_phoneme_files(self):
         paths = list(Path(self.processed_data_absolute_path).rglob(f"*.normalized.txt"))
@@ -126,7 +161,6 @@ class PrepareData:
             with open(phone_path, "w") as f:
                 f.write(" ".join(phones))
 
-
     def create_qnt_files(self):
         paths = list(Path(self.processed_data_absolute_path).rglob(f"*.wav"))
 
@@ -138,7 +172,6 @@ class PrepareData:
             qnt = encode_from_file(path)
             torch.save(qnt.cpu(), out_path)
 
-
     def execute_in_series(self):
         self.move_wav_files()
         self.create_normalized_txt_files()
@@ -146,16 +179,11 @@ class PrepareData:
         self.create_phoneme_files()  # Todo debug in cluster
 
 
-
-
-
 if __name__ == "__main__":
-
     # dataset_list = [
     #     Dataset(name="hayot-kis", absolute_path="/Users/amitroth/Data/hayot_kis/saspeech_gold_standard",
     #             metadata_path="metadata.csv", wav_path="wavs_24k/")
     # ]
-
 
     # Make sure before preparing the data the every folder has a metadata.csv file, and if not, create using Whisper.
     # prepare_data = PrepareData(
@@ -166,8 +194,13 @@ if __name__ == "__main__":
     #
     # prepare_data.execute_in_series()
 
-    dataset = Dataset(name="hayot-kis", absolute_path="/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard",
-                 metadata_path="metadata.csv", wav_path="wavs_24k/")
+    # dataset = Dataset(name="hayot-kis",
+    #                   absolute_path="/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard",
+    #                   metadata_path="metadata.csv", wav_path="wavs_24k/")
 
-    dataset.create_metadata()
+    mp3_dataset = Mp3Dataset(name="podcasts",
+                      absolute_path="/cs/dataset/Download/adiyoss/heb_data/podcasts/",
+                      mp3_files_absolute_path="/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history",
+                      metadata_path="metadata.csv")
 
+    mp3_dataset.orgainze_dataset()
