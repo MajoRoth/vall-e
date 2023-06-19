@@ -28,11 +28,10 @@ class Dataset:
         self.absolute_wav_path = os.path.join(self.absolute_path, self.wav_path)
 
         if not os.path.isfile(self.absolute_metadata_path):
-            print(self.absolute_metadata_path)
-            raise Exception("metadata.csv path is invalid")
+            raise Exception(f"metadata.csv path: {self.absolute_metadata_path} is invalid")
 
         if not os.path.exists(self.absolute_wav_path):
-            raise Exception("wav folder path is invalid")
+            raise Exception(f"wav folder path: {self.absolute_wav_path} is invalid")
 
     def create_metadata(self):
         # if os.path.isfile(self.absolute_metadata_path):
@@ -43,7 +42,9 @@ class Dataset:
 
         paths = list(Path(self.absolute_wav_path).rglob(f"*.wav"))
         for path in tqdm(paths):
-            result = model.transcribe(path, language='Hebrew')['text']
+            print(path)
+            print(type(path))
+            result = model.transcribe(str(path), language='Hebrew')['text']
             print(f"{os.path.split(path)[1]} - {result}")
             output.append(
                 {'file': os.path.split(path)[1], 'text': result}
