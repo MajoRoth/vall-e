@@ -57,11 +57,12 @@ class Mp3Dataset(Dataset):
     """
 
     def __init__(self, name: str, absolute_path: str, mp3_files_absolute_path: str, metadata_path: str = "metadata.csv", wav_path: str = ""):
-        if not os.path.exists(absolute_path):
+        # if not os.path.exists(absolute_path):
             # create folder of the dataset
             # os.makedirs(absolute_path)
 
-        if not os.path.exists(os.path.join(absolute_path, wav_path)):
+
+        # if not os.path.exists(os.path.join(absolute_path, wav_path)):
             # create folder of the dataset
             # os.makedirs(os.path.join(absolute_path, wav_path))
 
