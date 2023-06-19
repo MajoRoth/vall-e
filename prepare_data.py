@@ -28,6 +28,7 @@ class Dataset:
         self.absolute_wav_path = os.path.join(self.absolute_path, self.wav_path)
 
         if not os.path.isfile(self.absolute_metadata_path):
+            print(self.absolute_metadata_path)
             raise Exception("metadata.csv path is invalid")
 
         if not os.path.exists(self.absolute_wav_path):
