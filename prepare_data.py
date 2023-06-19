@@ -40,17 +40,17 @@ class Dataset:
 
         model = whisper.load_model("large-v2")
 
-        metadata = open(self.absolute_metadata_path + "_debug", mode='w')
-        writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        # metadata = open(self.absolute_metadata_path + "_debug", mode='w')
+        # writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
 
         paths = list(Path(self.absolute_wav_path).rglob(f"*.wav"))
         for path in tqdm(paths):
             result = model.transcribe(str(path), language='Hebrew')['text']
             print(f"{os.path.split(path)[1]} - {result}")
-            writer.writerow([os.path.split(path)[1], result])
+            # writer.writerow([os.path.split(path)[1], result])
 
-        metadata.close()
+        # metadata.close()
         print("\nDone\n")
 
 
