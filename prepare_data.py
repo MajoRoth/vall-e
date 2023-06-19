@@ -42,10 +42,7 @@ class Dataset:
 
         paths = list(Path(self.absolute_wav_path).rglob(f"*.wav"))
         for path in tqdm(paths):
-            print(path)
-            print(type(path))
             result = model.transcribe(str(path), language='Hebrew')['text']
-            print(f"{os.path.split(path)[1]} - {result}")
             output.append(
                 {'file': os.path.split(path)[1], 'text': result}
             )
