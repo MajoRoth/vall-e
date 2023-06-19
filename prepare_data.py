@@ -29,8 +29,8 @@ class Dataset:
         self.absolute_metadata_path = os.path.join(self.absolute_path, self.metadata_path)
         self.absolute_wav_path = os.path.join(self.absolute_path, self.wav_path)
 
-        if not os.path.exists(self.absolute_wav_path):
-            raise Exception(f"wav folder path: {self.absolute_wav_path} is invalid")
+        # if not os.path.exists(self.absolute_wav_path):
+        #     raise Exception(f"wav folder path: {self.absolute_wav_path} is invalid")
 
     def create_metadata_from_wav(self):
         # if os.path.isfile(self.absolute_metadata_path):
@@ -59,11 +59,11 @@ class Mp3Dataset(Dataset):
     def __init__(self, name: str, absolute_path: str, mp3_files_absolute_path: str, metadata_path: str = "metadata.csv", wav_path: str = ""):
         if not os.path.exists(absolute_path):
             # create folder of the dataset
-            os.makedirs(absolute_path)
+            # os.makedirs(absolute_path)
 
         if not os.path.exists(os.path.join(absolute_path, wav_path)):
             # create folder of the dataset
-            os.makedirs(os.path.join(absolute_path, wav_path))
+            # os.makedirs(os.path.join(absolute_path, wav_path))
 
         super().__init__(name, absolute_path, metadata_path, wav_path)
         self.mp3_files_absolute_path = mp3_files_absolute_path
@@ -79,9 +79,9 @@ class Mp3Dataset(Dataset):
         mp3_paths = list(Path(self.mp3_files_absolute_path).rglob(f"*.mp3"))
         for i, path in tqdm(enumerate(mp3_paths)):
             sound = AudioSegment.from_mp3(path)
-            sound.export(
-                os.path.join(self.absolute_wav_path, f"{self.name}-{i}.wav"),
-                format="wav")
+            # sound.export(
+            #     os.path.join(self.absolute_wav_path, f"{self.name}-{i}.wav"),
+            #     format="wav")
 
             print(f"exported {path}")
 
