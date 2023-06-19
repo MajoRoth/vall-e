@@ -165,7 +165,7 @@ if __name__ == "__main__":
     #
     # prepare_data.execute_in_series()
 
-    dataset = Dataset(name="hayot-kis", absolute_path="/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data",
+    dataset = Dataset(name="hayot-kis", absolute_path="/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard",
                  metadata_path="metadata.csv", wav_path="wavs_24k/")
 
     dataset.create_metadata()
