@@ -1,3 +1,4 @@
+import csv
 import os
 import shutil
 from enum import Enum
@@ -38,18 +39,19 @@ class Dataset:
         #     raise Exception("metadata.csv file exists, are you sure you want to overwrite it?")
 
         model = whisper.load_model("large-v2")
-        output = list()
+
+        metadata = open(self.absolute_metadata_path + "_debug", mode='w')
+        writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
 
         paths = list(Path(self.absolute_wav_path).rglob(f"*.wav"))
         for path in tqdm(paths):
             result = model.transcribe(str(path), language='Hebrew')['text']
             print(f"{os.path.split(path)[1]} - {result}")
-            output.append(
-                {'file': os.path.split(path)[1], 'text': result}
-            )
+            writer.writerow([os.path.split(path)[1], result])
 
+        metadata.close()
         print("\nDone\n")
-        print(output)
 
 
 class PrepareData:
