@@ -154,17 +154,16 @@ if __name__ == "__main__":
     # model = whisper.load_model("large-v2")
     model = None
 
-    for dataset in datasets:
-        if dataset.labeled:
-            # dataset.generate_qnt_files(datasets_config.prepared_data_path)
-            continue
-        else:
-            dataset.generate_metadata(datasets_config.prepared_data_path, model)
-
     # for dataset in datasets:
-    #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
-    #
-    # generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters)
+    #     if dataset.labeled:
+    #         dataset.generate_qnt_files(datasets_config.prepared_data_path)
+    #     else:
+    #         dataset.generate_metadata(datasets_config.prepared_data_path, model)
+
+    for dataset in datasets:
+        dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+
+    generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters)
 
 
     for dataset in datasets:
