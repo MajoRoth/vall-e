@@ -138,8 +138,8 @@ if __name__ == "__main__":
     for dataset in datasets:
         if dataset.labeled:
             dataset.generate_qnt_files(datasets_config.prepared_data_path)
-        else:
-            dataset.generate_metadata(datasets_config.prepared_data_path)
+        # else:
+        #     dataset.generate_metadata(datasets_config.prepared_data_path)
 
     # for dataset in datasets:
     #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
