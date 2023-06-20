@@ -9,7 +9,7 @@ import whisper
 
 
 import omegaconf
-from pydub import AudioSegment, silence
+from pydub import AudioSegment, silence, effects
 from tqdm import tqdm
 
 from tokenizer import HebrewTextUtils, TokenizeByLetters
@@ -63,11 +63,7 @@ class Dataset:
             for j, chunk in enumerate(chunks):
                 chunk_array = chunk.get_array_of_samples()
                 chunk_tensor = torch.Tensor(chunk_array)
-
-                mean = chunk_tensor.mean(dim=0)
-                std = chunk_tensor.std(dim=0)
-                print(mean, std)
-                chunk_tensor = (chunk_tensor - mean) / std
+                chunk_tensor = effects.normalize(chunk_tensor)
 
                 chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
