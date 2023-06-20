@@ -73,7 +73,7 @@ class Dataset:
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-                assert chunk_tensor.shape[0] == 1
+                print(f"{file_name} - {result}")
 
                 qnt = encode(chunk_tensor, sr, 'cuda')
                 torch.save(qnt.cpu(), out_path)
