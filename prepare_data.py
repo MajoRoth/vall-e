@@ -22,6 +22,7 @@ class Dataset:
     def __init__(self, name: str, absolute_path: str,
                  metadata_path: str = "metadata.csv",
                  wav_path: str = ""):
+
         self.wav_path = wav_path
         self.metadata_path = metadata_path
         self.absolute_path = absolute_path
