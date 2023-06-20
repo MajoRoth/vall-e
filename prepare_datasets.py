@@ -64,6 +64,11 @@ class Dataset:
                 chunk_array = chunk.get_array_of_samples()
                 chunk_tensor = torch.Tensor(chunk_array)
 
+                mean = chunk_tensor.meam(dim=0)
+                std = chunk_tensor.std(dim=0)
+                print(mean, std)
+                chunk_tensor = chunk_tensor / mean
+
                 chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
                         format="wav")
