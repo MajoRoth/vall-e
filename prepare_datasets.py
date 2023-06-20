@@ -77,11 +77,12 @@ class Dataset:
 
                 # create .qnt.pt file
                 out_path = os.path.join(prepared_data_path, file_name + ".qnt.pt")
+                print(f"{path} - {file_name} - {result}")
+
                 if os.path.isfile(out_path):
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-                print(f"{path} - {file_name} - {result}")
 
                 new_chunk_tensor = chunk_tensor.unsqueeze(0)
                 qnt = encode(new_chunk_tensor, sr, 'cuda')
