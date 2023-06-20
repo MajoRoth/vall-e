@@ -59,13 +59,11 @@ class Dataset:
 
             for j, chunk in enumerate(chunks):
                 chunk_array = chunk.get_array_of_samples()
-                chunk_tensor = torch.Tensor([chunk_array])
+                chunk_tensor = torch.Tensor(chunk_array)
 
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
-                print(chunk_tensor)
-                wav, sr = librosa.load(path)
-                print(wav)
+
                 result = model.transcribe(chunk_tensor, language='Hebrew')['text']
                 writer.writerow([file_name, result])
 
