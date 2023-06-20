@@ -39,6 +39,7 @@ class Dataset:
         if os.path.isfile(self.metadata_path):
             raise Exception(f"metadata file: {self.metadata_path} already exists")
 
+        print("Gnerating metadata")
         # model = whisper.load_model("large-v2")
 
         metadata = open(self.metadata_path, mode='w')
@@ -58,6 +59,7 @@ class Dataset:
             for j, chunk in enumerate(chunks):
                 chunk_array = chunk.get_array_of_samples()
                 chunk_tensor = torch.Tensor(chunk_array)
+                print(chunk_tensor.shape)
 
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
@@ -72,8 +74,8 @@ class Dataset:
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-                qnt = encode_from_file(path)
-                torch.save(qnt.cpu(), out_path)
+                # qnt = encode_from_file(path)
+                # torch.save(qnt.cpu(), out_path)
 
 
         metadata.close()
@@ -87,7 +89,7 @@ class Dataset:
         paths = list(Path(self.wav_path).rglob(f"*.wav"))
 
         for path in tqdm(paths):
-            file_name = _replace_file_extension(Path(os.path.basename(path)), ".qnt.pt")
+            file_name = _replace_file_extension(Path(f"{self.name}-{os.path.basename(path)}"), ".qnt.pt")
             out_path = Path(os.path.join(prepared_data_path, file_name))
             if out_path.exists():
                 print("Error: qnt path already exists")
@@ -136,9 +138,10 @@ if __name__ == "__main__":
 
     for dataset in datasets:
         if dataset.labeled:
-            dataset.generate_qnt_files(datasets_config.prepared_data_path)
-        # else:
-        #     dataset.generate_metadata(datasets_config.prepared_data_path)
+            # dataset.generate_qnt_files(datasets_config.prepared_data_path)
+            continue
+        else:
+            dataset.generate_metadata(datasets_config.prepared_data_path)
 
     # for dataset in datasets:
     #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
