@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import torch
-import whisper
+# import whisper
 import librosa
 
 
@@ -64,7 +64,8 @@ class Dataset:
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
 
-                result = model.transcribe(chunk_tensor, language='Hebrew')['text']
+                # result = model.transcribe(chunk_tensor, language='Hebrew')['text']
+                result = "בדיקה"
                 writer.writerow([file_name, result])
 
                 # create .qnt.pt file
@@ -75,9 +76,7 @@ class Dataset:
 
                 print(f"{file_name} - {result}")
 
-                print(chunk_tensor.shape)
                 new_chunk_tensor = chunk_tensor.unsqueeze(0)
-                print(new_chunk_tensor.shape)
                 qnt = encode(new_chunk_tensor, sr, 'cuda')
                 torch.save(qnt.cpu(), out_path)
 
@@ -101,6 +100,8 @@ class Dataset:
             qnt = encode_from_file(path)
             torch.save(qnt.cpu(), out_path)
 
+        print(f"generated wnt for {self.name}")
+
 
     def generate_normalized_txt_files(self, prepared_data_path: str):
         for dataset in self.dataset_list:
@@ -113,6 +114,8 @@ class Dataset:
                         HebrewTextUtils.remove_nikud(row[1])
                     )
                     txt_file.close()
+
+        print("created normalized txt")
 
 
 
@@ -140,16 +143,16 @@ if __name__ == "__main__":
 
     print("Initialized datasets")
 
-    model = whisper.load_model("large-v2")
+    # model = whisper.load_model("large-v2")
+    model = None
 
     for dataset in datasets:
         if dataset.labeled:
-            # dataset.generate_qnt_files(datasets_config.prepared_data_path)
-            continue
+            dataset.generate_qnt_files(datasets_config.prepared_data_path)
         else:
             dataset.generate_metadata(datasets_config.prepared_data_path, model)
 
-    # for dataset in datasets:
-    #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+    for dataset in datasets:
+        dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
     #
     # generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters)
