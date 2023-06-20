@@ -5,17 +5,20 @@ from pathlib import Path
 import pandas as pd
 import torch
 # import whisper
-
+print("1")
 
 import omegaconf
 from pydub import AudioSegment, silence
 from tqdm import tqdm
+print("1")
 
 from tokenizer import HebrewTextUtils, TokenizeByLetters
 from vall_e.emb.g2p import _get_graphs
+print("1")
 
 from vall_e.emb.qnt import encode_from_file, _replace_file_extension
 
+print("1")
 
 
 class Dataset:
@@ -110,6 +113,7 @@ class Dataset:
 
 
 
+print("1")
 
 
 def generate_phoneme_files(prepared_data_path, tokenizer):
@@ -126,9 +130,11 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
         with open(phone_path, "w") as f:
             f.write(" ".join(phones))
 
+print("1")
 
 if __name__ == "__main__":
     datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
+    print("2")
 
     datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
 
