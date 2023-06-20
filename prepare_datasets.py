@@ -76,6 +76,7 @@ class Dataset:
                 print(type(chunk_array))
                 chunk_tensor = torch.from_numpy(chunk_array)
                 chunk_tensor = chunk_tensor.T
+                chunk_tensor = chunk_tensor.squeeze()
 
                 chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
