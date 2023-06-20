@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import torch
-# import whisper
+import whisper
 
 
 import omegaconf
@@ -28,7 +28,7 @@ class Dataset:
         self.length: bool = None
 
 
-    def generate_metadata(self, prepared_data_path: str):
+    def generate_metadata(self, prepared_data_path: str, model):
         """
          generates metadata.csv in the specified path
          creates .qnt.pt file for every segment
@@ -40,7 +40,6 @@ class Dataset:
             raise Exception(f"metadata file: {self.metadata_path} already exists")
 
         print("Gnerating metadata")
-        # model = whisper.load_model("large-v2")
 
         metadata = open(self.metadata_path, mode='w')
         writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -60,15 +59,11 @@ class Dataset:
             for j, chunk in enumerate(chunks):
                 chunk_array = chunk.get_array_of_samples()
                 chunk_tensor = torch.Tensor([chunk_array])
-                print(chunk_tensor.shape)
-                print(chunk_tensor)
 
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
-                # result = model.transcribe(chunk_tensor, language='Hebrew')['text']
-                result = "בדיקה"
-                writer.writerow([os.path.split(path)[1], result])
-                print(f"wrote {file_name} in {self.metadata_path}")
+                result = model.transcribe(chunk_tensor, language='Hebrew')['text']
+                writer.writerow([file_name, result])
 
                 # create .qnt.pt file
                 out_path = os.path.join(prepared_data_path, file_name + ".qnt.pt")
@@ -140,12 +135,14 @@ if __name__ == "__main__":
 
     print("Initialized datasets")
 
+    model = whisper.load_model("large-v2")
+
     for dataset in datasets:
         if dataset.labeled:
             # dataset.generate_qnt_files(datasets_config.prepared_data_path)
             continue
         else:
-            dataset.generate_metadata(datasets_config.prepared_data_path)
+            dataset.generate_metadata(datasets_config.prepared_data_path, model)
 
     # for dataset in datasets:
     #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
