@@ -4,8 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import torch
-# import whisper
-import librosa
+import whisper
 
 
 import omegaconf
@@ -68,8 +67,7 @@ class Dataset:
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
 
-                # result = model.transcribe(chunk_tensor, language='Hebrew')['text']
-                result = "בדיקה"
+                result = model.transcribe(chunk_tensor, language='Hebrew')['text']
                 writer.writerow([file_name, result])
 
                 # create .qnt.pt file
@@ -78,7 +76,7 @@ class Dataset:
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-                print(f"{file_name} - {result}")
+                # print(f"{file_name} - {result}")
 
                 new_chunk_tensor = chunk_tensor.unsqueeze(0)
                 qnt = encode(new_chunk_tensor, sr, 'cuda')
@@ -151,17 +149,17 @@ if __name__ == "__main__":
 
     print("Initialized datasets")
 
-    # model = whisper.load_model("large-v2")
+    model = whisper.load_model("large-v2")
     model = None
 
-    # for dataset in datasets:
-    #     if dataset.labeled:
-    #         dataset.generate_qnt_files(datasets_config.prepared_data_path)
-    #     else:
-    #         dataset.generate_metadata(datasets_config.prepared_data_path, model)
+    for dataset in datasets:
+        if dataset.labeled:
+            dataset.generate_qnt_files(datasets_config.prepared_data_path)
+        else:
+            dataset.generate_metadata(datasets_config.prepared_data_path, model)
 
-    # for dataset in datasets:
-    #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+    for dataset in datasets:
+        dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
 
 
     tokenizer = TokenizeByLetters()
