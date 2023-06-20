@@ -7,11 +7,11 @@ datasets:
     labeled: True
   -
     name: "osim-history"
-    wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
+    wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/ep330_liadmudrik"
     metadata_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history_metadata.csv"
     labeled: False
-  -
-    name: "geekonomy"
-    wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/geekonomy/"
-    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/geekonomy_metadata.csv"
-    labeled: False
+#  -
+#    name: "geekonomy"
+#    wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/geekonomy/"
+#    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/geekonomy_metadata.csv"
+#    labeled: False

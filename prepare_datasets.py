@@ -104,16 +104,15 @@ class Dataset:
 
 
     def generate_normalized_txt_files(self, prepared_data_path: str):
-        for dataset in self.dataset_list:
-            data_frame = pd.read_csv(dataset.metadata_path, encoding="utf-8", sep='|', header=None)
+        data_frame = pd.read_csv(self.metadata_path, encoding="utf-8", sep='|', header=None)
 
-            for index, row in data_frame.iterrows():
-                with open(os.path.join(prepared_data_path, f"{row[0]}.normalized.txt"),
-                          'w') as txt_file:
-                    txt_file.write(
-                        HebrewTextUtils.remove_nikud(row[1])
-                    )
-                    txt_file.close()
+        for index, row in data_frame.iterrows():
+            with open(os.path.join(prepared_data_path, f"{row[0]}.normalized.txt"),
+                      'w') as txt_file:
+                txt_file.write(
+                    HebrewTextUtils.remove_nikud(row[1])
+                )
+                txt_file.close()
 
         print("created normalized txt")
 
@@ -148,11 +147,12 @@ if __name__ == "__main__":
 
     for dataset in datasets:
         if dataset.labeled:
-            dataset.generate_qnt_files(datasets_config.prepared_data_path)
+            # dataset.generate_qnt_files(datasets_config.prepared_data_path)
+            continue
         else:
             dataset.generate_metadata(datasets_config.prepared_data_path, model)
 
-    for dataset in datasets:
-        dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+    # for dataset in datasets:
+    #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
     #
     # generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters)
