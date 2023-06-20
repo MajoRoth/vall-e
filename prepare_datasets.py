@@ -82,6 +82,7 @@ class Dataset:
                         format="wav")
 
                 np_chunk, sr =pydub_to_np(chunk)
+                print(sr)
 
                 print(np_chunk)
                 print(np_chunk.shape)
