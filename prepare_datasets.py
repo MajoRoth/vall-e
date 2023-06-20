@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import torch
+import torchaudio
 import whisper
 
 
@@ -66,6 +67,14 @@ class Dataset:
                 chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
                         format="wav")
+
+                print(chunk_tensor)
+                print(chunk_tensor.shape)
+
+                wav, sr = torchaudio.load(os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"))
+
+                print(wav)
+                print(wav.shape)
 
                 self.length += chunk.duration_seconds
 
