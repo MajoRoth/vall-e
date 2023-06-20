@@ -2,6 +2,7 @@ import csv
 import os.path
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import torch
 import torchaudio
@@ -50,6 +51,15 @@ class Dataset:
 
         self.length = 0
 
+        def pydub_to_np(audio: AudioSegment) -> (np.ndarray, int):
+            """
+            Converts pydub audio segment into np.float32 of shape [duration_in_seconds*sample_rate, channels],
+            where each value is in range [-1.0, 1.0].
+            Returns tuple (audio_np_array, sample_rate).
+            """
+            return np.array(audio.get_array_of_samples(), dtype=np.float32).reshape((-1, audio.channels)) / (
+                    1 << (8 * audio.sample_width - 1)), audio.frame_rate
+
         for i, path in tqdm(enumerate(audio_paths)):
             sound = AudioSegment.from_file(path)
             sr = sound.frame_rate
@@ -61,8 +71,7 @@ class Dataset:
             )
 
             for j, chunk in enumerate(chunks):
-                chunk = effects.normalize(chunk)
-                chunk_array = chunk.get_array_of_samples()
+                chunk_array = pydub_to_np(chunk)
                 chunk_tensor = torch.Tensor(chunk_array)
 
                 chunk.export(
