@@ -71,13 +71,15 @@ class Dataset:
 
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
-
+                alt_result = model.transcribe(
+                    os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav")
+                , language='Hebrew')['text']
                 result = model.transcribe(chunk_tensor, language='Hebrew')['text']
                 writer.writerow([file_name, result])
 
                 # create .qnt.pt file
                 out_path = os.path.join(prepared_data_path, file_name + ".qnt.pt")
-                print(f"{path} - {file_name} - {result}")
+                print(f"{path} - {file_name} - {result} - {alt_result}")
 
                 if os.path.isfile(out_path):
                     print(f"Error: qnt path {out_path} already exists")
