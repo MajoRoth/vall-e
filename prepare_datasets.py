@@ -76,7 +76,7 @@ class Dataset:
                 print(f"{file_name} - {result}")
 
                 print(chunk_tensor.shape)
-                new_chunk_tensor = torch.Tensor([chunk_tensor])
+                new_chunk_tensor = chunk_tensor.unsqueeze(0)
                 print(new_chunk_tensor.shape)
                 qnt = encode(new_chunk_tensor, sr, 'cuda')
                 torch.save(qnt.cpu(), out_path)
