@@ -63,7 +63,7 @@ class Dataset:
                 chunk_array = chunk.get_array_of_samples()
                 chunk_tensor = torch.Tensor(chunk_array)
 
-                sound.export(
+                chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
                         format="wav")
 
