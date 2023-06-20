@@ -81,7 +81,7 @@ class Dataset:
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
                         format="wav")
 
-                chunk.set_frame_rate(16000)
+                chunk = chunk.set_frame_rate(16000)
                 np_chunk, sr =pydub_to_np(chunk)
                 print(sr)
 
