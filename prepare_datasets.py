@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import torch
 import whisper
+import librosa
 
 
 import omegaconf
@@ -63,7 +64,7 @@ class Dataset:
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
                 print(chunk_tensor)
-                wav, sr = torch.load(path)
+                wav, sr = librosa.load(path)
                 print(wav)
                 result = model.transcribe(chunk_tensor, language='Hebrew')['text']
                 writer.writerow([file_name, result])
