@@ -71,7 +71,7 @@ class Dataset:
             )
 
             for j, chunk in enumerate(chunks):
-                chunk_array = pydub_to_np(chunk)
+                chunk_array, sr = pydub_to_np(chunk)
                 print(chunk_array)
                 print(type(chunk_array))
                 chunk_tensor = torch.from_numpy(chunk_array)
