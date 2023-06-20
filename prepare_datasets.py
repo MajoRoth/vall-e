@@ -58,7 +58,7 @@ class Dataset:
             Returns tuple (audio_np_array, sample_rate).
             """
             resampled_audio = audio.set_frame_rate(16000)
-            return np.frombuffer(audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0
+            return np.frombuffer(resampled_audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0
 
         for i, path in tqdm(enumerate(audio_paths)):
             sound = AudioSegment.from_file(path)
@@ -87,8 +87,9 @@ class Dataset:
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-                print(np_chunk.shape)
-                qnt = encode(np_chunk, sr, 'cuda')
+                torch_chunk = torch.from_numpy(np_chunk)
+                print(torch_chunk.shape)
+                qnt = encode(torch_chunk, sr, 'cuda')
                 torch.save(qnt.cpu(), out_path)
 
 
