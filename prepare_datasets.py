@@ -160,10 +160,12 @@ if __name__ == "__main__":
     #     else:
     #         dataset.generate_metadata(datasets_config.prepared_data_path, model)
 
-    for dataset in datasets:
-        dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+    # for dataset in datasets:
+    #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
 
-    generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters)
+
+    tokenizer = TokenizeByLetters()
+    generate_phoneme_files(datasets_config.prepared_data_path, tokenizer)
 
 
     for dataset in datasets:
