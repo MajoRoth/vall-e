@@ -77,7 +77,7 @@ class Dataset:
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-                # print(f"{file_name} - {result}")
+                print(f"{path} - {file_name} - {result}")
 
                 new_chunk_tensor = chunk_tensor.unsqueeze(0)
                 qnt = encode(new_chunk_tensor, sr, 'cuda')
