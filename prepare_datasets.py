@@ -62,6 +62,9 @@ class Dataset:
 
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
+                print(chunk_tensor)
+                wav, sr = torch.load(path)
+                print(wav)
                 result = model.transcribe(chunk_tensor, language='Hebrew')['text']
                 writer.writerow([file_name, result])
 
