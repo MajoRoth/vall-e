@@ -88,7 +88,7 @@ class Dataset:
 
         for path in tqdm(paths):
             file_name = _replace_file_extension(Path(os.path.basename(path)), ".qnt.pt")
-            out_path = os.path.join(prepared_data_path, file_name)
+            out_path = Path(os.path.join(prepared_data_path, file_name))
             if out_path.exists():
                 print("Error: qnt path already exists")
                 continue
