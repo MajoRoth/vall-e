@@ -57,7 +57,8 @@ class Dataset:
             where each value is in range [-1.0, 1.0].
             Returns tuple (audio_np_array, sample_rate).
             """
-            return np.frombuffer(audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0, audio.frame_rate
+            resampled_audio = audio.set_frame_rate(16000)
+            return np.frombuffer(audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0
 
         for i, path in tqdm(enumerate(audio_paths)):
             sound = AudioSegment.from_file(path)
@@ -70,50 +71,24 @@ class Dataset:
             )
 
             for j, chunk in enumerate(chunks):
-                chunk_array, sr = pydub_to_np(chunk)
-                # print(chunk_array)
-                # print(type(chunk_array))
-                # chunk_tensor = torch.from_numpy(chunk_array)
-                # chunk_tensor = chunk_tensor.T
-                # chunk_tensor = chunk_tensor.squeeze()
-
-                chunk.export(
-                        os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
-                        format="wav")
-
-                chunk = chunk.set_frame_rate(16000)
-                np_chunk, sr =pydub_to_np(chunk)
-                print(sr)
-
-                print(np_chunk)
-                print(np_chunk.shape)
-
-                wav, sr = torchaudio.load(os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"))
-
-                print(wav)
-                print(wav.shape)
-
+                np_chunk = pydub_to_np(chunk)
                 self.length += chunk.duration_seconds
 
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
-                alt_result = model.transcribe(
-                    os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav")
-                , language='Hebrew')['text']
                 result = model.transcribe(np_chunk, language='Hebrew')['text']
                 writer.writerow([file_name, result])
 
                 # create .qnt.pt file
                 out_path = os.path.join(prepared_data_path, file_name + ".qnt.pt")
-                print(f"{path} - {file_name} - {result} - {alt_result}")
+                print(f"{path} - {file_name} - {result}")
 
                 if os.path.isfile(out_path):
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-
-                new_chunk_tensor = chunk_tensor.unsqueeze(0)
-                qnt = encode(new_chunk_tensor, sr, 'cuda')
+                print(np_chunk.shape)
+                qnt = encode(np_chunk, sr, 'cuda')
                 torch.save(qnt.cpu(), out_path)
 
 
