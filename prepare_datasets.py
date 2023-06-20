@@ -88,7 +88,6 @@ class Dataset:
                     continue
 
                 torch_chunk = torch.from_numpy(np_chunk).unsqueeze(0)
-                print(torch_chunk.shape)
                 qnt = encode(torch_chunk, sr, 'cuda')
                 torch.save(qnt.cpu(), out_path)
 
@@ -166,8 +165,7 @@ if __name__ == "__main__":
 
     for dataset in datasets:
         if dataset.labeled:
-            # dataset.generate_qnt_files(datasets_config.prepared_data_path)
-            continue
+            dataset.generate_qnt_files(datasets_config.prepared_data_path)
         else:
             dataset.generate_metadata(datasets_config.prepared_data_path, model)
 
