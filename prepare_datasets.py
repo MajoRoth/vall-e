@@ -67,7 +67,7 @@ class Dataset:
                 mean = chunk_tensor.mean(dim=0)
                 std = chunk_tensor.std(dim=0)
                 print(mean, std)
-                chunk_tensor = chunk_tensor / mean
+                chunk_tensor = (chunk_tensor - std) / mean
 
                 chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
