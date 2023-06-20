@@ -4,9 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 import torch
-import torchaudio
-import whisper
-import soundfile as sf
+# import whisper
+
 
 import omegaconf
 from pydub import AudioSegment, silence
