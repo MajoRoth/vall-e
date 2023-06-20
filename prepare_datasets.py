@@ -72,18 +72,20 @@ class Dataset:
 
             for j, chunk in enumerate(chunks):
                 chunk_array, sr = pydub_to_np(chunk)
-                print(chunk_array)
-                print(type(chunk_array))
-                chunk_tensor = torch.from_numpy(chunk_array)
-                chunk_tensor = chunk_tensor.T
-                chunk_tensor = chunk_tensor.squeeze()
+                # print(chunk_array)
+                # print(type(chunk_array))
+                # chunk_tensor = torch.from_numpy(chunk_array)
+                # chunk_tensor = chunk_tensor.T
+                # chunk_tensor = chunk_tensor.squeeze()
 
                 chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
                         format="wav")
 
-                print(chunk_tensor)
-                print(chunk_tensor.shape)
+                np_chunk, sr =pydub_to_np(chunk)
+
+                print(np_chunk)
+                print(np_chunk.shape)
 
                 wav, sr = torchaudio.load(os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"))
 
@@ -97,7 +99,7 @@ class Dataset:
                 alt_result = model.transcribe(
                     os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav")
                 , language='Hebrew')['text']
-                result = model.transcribe(chunk_tensor, language='Hebrew')['text']
+                result = model.transcribe(np_chunk, language='Hebrew')['text']
                 writer.writerow([file_name, result])
 
                 # create .qnt.pt file
