@@ -72,7 +72,7 @@ class Dataset:
 
             for j, chunk in enumerate(chunks):
                 chunk_array = pydub_to_np(chunk)
-                chunk_tensor = torch.Tensor(chunk_array)
+                chunk_tensor = torch.from_numpy(chunk_array)
 
                 chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
