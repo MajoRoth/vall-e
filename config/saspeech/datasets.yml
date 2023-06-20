@@ -5,11 +5,11 @@ datasets:
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/wavs_24k/"
     metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/metadata.csv"
     labeled: True
-  -
-    name: "hayot-kis-auto"
-    wav_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data/wavs/"
-    metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data/metadata.csv"
-    labeled: True
+#  -
+#    name: "hayot-kis-auto"
+#    wav_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data/wavs/"
+#    metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data/metadata.csv"
+#    labeled: True
   -
     name: "osim-history"
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/ep330_liadmudrik"
