@@ -10,6 +10,7 @@ from pydub import AudioSegment
 
 import pandas as pd
 import torch
+from pydub.silence import split_on_silence
 from tqdm import tqdm
 
 from tokenizer import Tokenizer, TokenizeByLetters, HebrewTextUtils
@@ -28,6 +29,8 @@ class Dataset:
 
         self.absolute_metadata_path = os.path.join(self.absolute_path, self.metadata_path)
         self.absolute_wav_path = os.path.join(self.absolute_path, self.wav_path)
+
+        self.length = None
 
         # if not os.path.exists(self.absolute_wav_path):
         #     raise Exception(f"wav folder path: {self.absolute_wav_path} is invalid")
@@ -93,6 +96,24 @@ class Mp3Dataset(Dataset):
         self.create_metadata_from_wav()
 
 
+    def organize_if_needed(self):
+        """
+            call organized data set only if cant find the preprocessed wavs
+        """
+        if not os.path.exists(self.absolute_path):
+            # create folder of the dataset
+            os.makedirs(self.absolute_path)
+            os.makedirs(self.absolute_wav_path)
+            self.organize_dataset()
+        elif not os.path.exists(self.absolute_wav_path):
+            os.makedirs(self.absolute_wav_path)
+            self.organize_dataset()
+
+        else:
+            print(f"{self.name} is already organized")
+
+
+
 class PrepareData:
     """
         Specify folders of raw data and exectue preprocess in order to train vall-e
@@ -118,17 +139,22 @@ class PrepareData:
         data_folders_list = List of tuples containing metadata.csv path, and wav folder path.
     """
 
-    def __init__(self, processed_data_absolute_path: str, dataset_list: List[Dataset],
+    def __init__(self, processed_data_absolute_path: str, datasets_list: List[Dataset],
                  tokenizer: Type[Tokenizer] = TokenizeByLetters):
         self.processed_data_absolute_path = processed_data_absolute_path
         self.dataset_list = dataset_list
         self.tokenizer = tokenizer
 
+        for dataset in self.dataset_list:
+            if isinstance(dataset, Mp3Dataset):
+                dataset.organize_if_needed()
+            print(f"Dataset: {dataset.name}, length: {dataset.length} seconds")
+
     def move_wav_files(self):
         print("--- Moving Wav Files ---")
         for dataset in self.dataset_list:
             print(f"Moving files from {dataset.absolute_wav_path}")
-            paths = list(Path(dataset.absolute_wav_path).rglob(f"*.wav"))
+            paths = list(Path(dataset.absolute_wav_path).rglob(f"*.wav")) + list(Path(dataset.absolute_wav_path).rglob(f"*.mp3"))
 
             for path in tqdm(paths):
                 file_name = os.path.split(path)[1]
@@ -164,6 +190,7 @@ class PrepareData:
                 f.write(" ".join(phones))
 
     def create_qnt_files(self):
+        print("quant")
         paths = list(Path(self.processed_data_absolute_path).rglob(f"*.wav"))
 
         for path in tqdm(paths):
@@ -181,28 +208,49 @@ class PrepareData:
         self.create_phoneme_files()  # Todo debug in cluster
 
 
+
 if __name__ == "__main__":
-    # dataset_list = [
+    # datasets_list = [
     #     Dataset(name="hayot-kis", absolute_path="/Users/amitroth/Data/hayot_kis/saspeech_gold_standard",
-    #             metadata_path="metadata.csv", wav_path="wavs_24k/")
+    #             metadata_path="metadata.csv", wav_path="wavs_24k/"),
+    #
+    #     Mp3Dataset(name="osim-history",
+    #                       absolute_path="/cs/dataset/Download/adiyoss/heb_data/osim-history/",
+    #                       mp3_files_absolute_path="/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history",
+    #                       metadata_path="metadata.csv"),
+    #
+    #     Mp3Dataset(name="geekonomy",
+    #                absolute_path="/cs/dataset/Download/adiyoss/heb_data/geekonomy/",
+    #                mp3_files_absolute_path="/cs/dataset/Download/adiyoss/podcasts/parsed_data/geekonomy",
+    #                metadata_path="metadata.csv")
     # ]
 
+    dataset_list = [
+        Dataset(name="podcasts",
+                   absolute_path="/Users/amitroth/Data/hayot_kis/saspeech_gold_standard/", wav_path="wavs_24k",
+                   metadata_path="metadata.csv")
+    ]
+
     # Make sure before preparing the data the every folder has a metadata.csv file, and if not, create using Whisper.
-    # prepare_data = PrepareData(
-    #     processed_data_absolute_path="/Users/amitroth/Data/ready",
-    #     dataset_list=dataset_list,
-    #     tokenizer=TokenizeByLetters
-    # )
-    #
-    # prepare_data.execute_in_series()
+    prepare_data = PrepareData(
+        processed_data_absolute_path="/Users/amitroth/Data/ready",
+        datasets_list=dataset_list,
+        tokenizer=TokenizeByLetters
+    )
+
+    prepare_data.execute_in_series()
 
     # dataset = Dataset(name="hayot-kis",
     #                   absolute_path="/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard",
     #                   metadata_path="metadata.csv", wav_path="wavs_24k/")
 
-    mp3_dataset = Mp3Dataset(name="podcasts",
-                      absolute_path="/cs/dataset/Download/adiyoss/heb_data/podcasts/",
-                      mp3_files_absolute_path="/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history",
-                      metadata_path="metadata.csv")
+    # mp3_dataset = Mp3Dataset(name="podcasts",
+    #                   absolute_path="/cs/dataset/Download/adiyoss/heb_data/podcasts/",
+    #                   mp3_files_absolute_path="/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history",
+    #                   metadata_path="metadata.csv")
 
-    mp3_dataset.orgainze_dataset()
+    # mp3_dataset = Mp3Dataset(name="podcasts",
+    #                          absolute_path="/Users/amitroth/Data/mp3_data_processed",
+    #                          mp3_files_absolute_path="/Users/amitroth/Data/mp3_data",
+    #                          metadata_path="metadata.csv")
+
