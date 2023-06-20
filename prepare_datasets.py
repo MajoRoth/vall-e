@@ -14,7 +14,7 @@ from tqdm import tqdm
 from tokenizer import HebrewTextUtils, TokenizeByLetters
 from vall_e.emb.g2p import _get_graphs
 
-from vall_e.emb.qnt import encode_from_file, _replace_file_extension
+from vall_e.emb.qnt import encode_from_file, _replace_file_extension, encode
 
 
 
@@ -49,6 +49,7 @@ class Dataset:
 
         for i, path in tqdm(enumerate(audio_paths)):
             sound = AudioSegment.from_file(path)
+            sr = sound.frame_rate
             chunks = silence.split_on_silence(
                 sound,
                 min_silence_len=500,
@@ -58,8 +59,9 @@ class Dataset:
 
             for j, chunk in enumerate(chunks):
                 chunk_array = chunk.get_array_of_samples()
-                chunk_tensor = torch.Tensor(chunk_array)
+                chunk_tensor = torch.Tensor([chunk_array])
                 print(chunk_tensor.shape)
+                print(chunk_tensor)
 
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
@@ -74,8 +76,10 @@ class Dataset:
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-                # qnt = encode_from_file(path)
-                # torch.save(qnt.cpu(), out_path)
+                assert chunk_tensor.shape[0] == 1
+
+                qnt = encode(chunk_tensor, sr, 'cuda')
+                torch.save(qnt.cpu(), out_path)
 
 
         metadata.close()
