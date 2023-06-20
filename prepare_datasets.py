@@ -37,9 +37,10 @@ class Dataset:
             raise Exception(f"dataset is already labeled")
 
         if os.path.isfile(self.metadata_path):
-            raise Exception(f"metadata file: {self.metadata_path} already exists")
+            print(f"{self.name} is already labeled, skipping")
+            return 0
 
-        print("Gnerating metadata")
+        print(f"generating metadata for {self.name}")
 
         metadata = open(self.metadata_path, mode='w')
         writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -91,6 +92,8 @@ class Dataset:
         if not self.labeled:
             raise Exception(f"dataset not labeled labeled")
 
+        print(f"generating qnt for {self.name}")
+
         paths = list(Path(self.wav_path).rglob(f"*.wav"))
 
         for path in tqdm(paths):
@@ -102,10 +105,10 @@ class Dataset:
             qnt = encode_from_file(path)
             torch.save(qnt.cpu(), out_path)
 
-        print(f"generated wnt for {self.name}")
-
 
     def generate_normalized_txt_files(self, prepared_data_path: str):
+        print(f"creating normalized txt for {self.name}")
+
         data_frame = pd.read_csv(self.metadata_path, encoding="utf-8", sep='|', header=None)
 
         for index, row in data_frame.iterrows():
@@ -116,7 +119,6 @@ class Dataset:
                 )
                 txt_file.close()
 
-        print("created normalized txt")
 
 
     def __str__(self):
@@ -128,6 +130,8 @@ class Dataset:
 
 
 def generate_phoneme_files(prepared_data_path, tokenizer):
+    print(f"generating phoneme files")
+
     paths = list(Path(prepared_data_path).rglob(f"*.normalized.txt"))
 
     for path in tqdm(paths):
@@ -150,11 +154,11 @@ if __name__ == "__main__":
     print("Initialized datasets")
 
     model = whisper.load_model("large-v2")
-    model = None
 
     for dataset in datasets:
         if dataset.labeled:
-            dataset.generate_qnt_files(datasets_config.prepared_data_path)
+            # dataset.generate_qnt_files(datasets_config.prepared_data_path)
+            continue
         else:
             dataset.generate_metadata(datasets_config.prepared_data_path, model)
 
