@@ -72,6 +72,9 @@ class HebrewTextUtils:
 
     @staticmethod
     def remove_nikud(text: str):
+        if not isinstance(text, str):
+            print(f"ERROR: {text} is not str - {type(text)}. returned empty string")
+            return ""
         new_text = ""
         for char in text:
             if not HebrewTextUtils.is_nikud(char):

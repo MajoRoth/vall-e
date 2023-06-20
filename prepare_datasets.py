@@ -75,12 +75,13 @@ class Dataset:
                 self.length += chunk.duration_seconds
 
                 # write to csv
-                file_name = f"{self.name}-{i}-{j}"
+                file_name = f"{i}-{j}"
                 result = model.transcribe(np_chunk, language='Hebrew')['text']
                 writer.writerow([file_name, result])
 
                 # create .qnt.pt file
-                out_path = os.path.join(prepared_data_path, file_name + ".qnt.pt")
+                qnt_file_name = f"{self.name}-{file_name}"
+                out_path = os.path.join(prepared_data_path, qnt_file_name + ".qnt.pt")
                 print(f"{path} - {file_name} - {result}")
 
                 if os.path.isfile(out_path):
@@ -120,7 +121,7 @@ class Dataset:
         data_frame = pd.read_csv(self.metadata_path, encoding="utf-8", sep='|', header=None)
 
         for index, row in data_frame.iterrows():
-            with open(os.path.join(prepared_data_path, f"{row[0]}.normalized.txt"),
+            with open(os.path.join(prepared_data_path, f"{self.name}-{row[0]}.normalized.txt"),
                       'w') as txt_file:
                 txt_file.write(
                     HebrewTextUtils.remove_nikud(row[1])
@@ -163,11 +164,11 @@ if __name__ == "__main__":
 
     model = whisper.load_model("large-v2")
 
-    for dataset in datasets:
-        if dataset.labeled:
-            dataset.generate_qnt_files(datasets_config.prepared_data_path)
-        else:
-            dataset.generate_metadata(datasets_config.prepared_data_path, model)
+    # for dataset in datasets:
+    #     if dataset.labeled:
+    #         dataset.generate_qnt_files(datasets_config.prepared_data_path)
+    #     else:
+    #         dataset.generate_metadata(datasets_config.prepared_data_path, model)
 
     for dataset in datasets:
         dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
