@@ -57,8 +57,7 @@ class Dataset:
             where each value is in range [-1.0, 1.0].
             Returns tuple (audio_np_array, sample_rate).
             """
-            return np.array(audio.get_array_of_samples(), dtype=np.float32).reshape((-1, audio.channels)) / (
-                    1 << (8 * audio.sample_width - 1)), audio.frame_rate
+            return np.frombuffer(audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0, audio.frame_rate
 
         for i, path in tqdm(enumerate(audio_paths)):
             sound = AudioSegment.from_file(path)
