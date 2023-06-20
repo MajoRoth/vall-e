@@ -47,6 +47,8 @@ class Dataset:
 
         audio_paths = list(Path(self.wav_path).rglob(f"*.wav")) + list(Path(self.wav_path).rglob(f"*.mp3"))
 
+        self.length = 0
+
         for i, path in tqdm(enumerate(audio_paths)):
             sound = AudioSegment.from_file(path)
             sr = sound.frame_rate
@@ -60,6 +62,8 @@ class Dataset:
             for j, chunk in enumerate(chunks):
                 chunk_array = chunk.get_array_of_samples()
                 chunk_tensor = torch.Tensor(chunk_array)
+
+                self.length += chunk.duration_seconds
 
                 # write to csv
                 file_name = f"{self.name}-{i}-{j}"
@@ -117,6 +121,11 @@ class Dataset:
         print("created normalized txt")
 
 
+    def __str__(self):
+        return f"Dataset - name: {self.name}, length: {self.length}"
+
+    def __repr__(self):
+        return self.__str__()
 
 
 
@@ -156,3 +165,7 @@ if __name__ == "__main__":
     #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
     #
     # generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters)
+
+
+    for dataset in datasets:
+        print(dataset)
