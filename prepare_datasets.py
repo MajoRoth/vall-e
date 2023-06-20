@@ -61,9 +61,9 @@ class Dataset:
             )
 
             for j, chunk in enumerate(chunks):
+                chunk = effects.normalize(chunk)
                 chunk_array = chunk.get_array_of_samples()
                 chunk_tensor = torch.Tensor(chunk_array)
-                chunk_tensor = effects.normalize(chunk_tensor)
 
                 chunk.export(
                         os.path.join("/cs/labs/adiyoss/amitroth/vall-e", f"{self.name}-{i}-{j}.wav"),
