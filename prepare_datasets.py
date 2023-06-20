@@ -87,7 +87,7 @@ class Dataset:
                     print(f"Error: qnt path {out_path} already exists")
                     continue
 
-                torch_chunk = torch.from_numpy(np_chunk)
+                torch_chunk = torch.from_numpy(np_chunk).unsqueeze(0)
                 print(torch_chunk.shape)
                 qnt = encode(torch_chunk, sr, 'cuda')
                 torch.save(qnt.cpu(), out_path)
