@@ -49,7 +49,7 @@ class Dataset:
         length = 0
 
         paths = list(Path(self.wav_path).rglob(f"*.mp3"))
-        len_paths = len(path)
+        len_paths = len(paths)
         for counter, path in enumerate(paths):
             sound = AudioSegment.from_file(path)
             length += sound.duration_seconds
