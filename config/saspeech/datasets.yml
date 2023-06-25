@@ -14,7 +14,7 @@ datasets:
     length: 0
   -
     name: "osim-history"
-    wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
+    wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/30026150/"
     metadata_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history_metadata.csv"
     labeled: False
     length: 0
