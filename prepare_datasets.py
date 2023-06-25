@@ -27,7 +27,7 @@ class Dataset:
         self.wav_path: str = conf.wav_path
         self.metadata_path: str = conf.metadata_path
         self.labeled: str = conf.labeled
-        self.length: bool = None
+        self.length: bool = conf.length
 
 
     def create_metadata_csv(self):
@@ -60,15 +60,16 @@ class Dataset:
             )
 
             for i, chunk in enumerate(chunks):
-                result = model.transcribe(str(path), language='Hebrew')['text']
+                np_chunk = pydub_to_np(chunk)
+                result = model.transcribe(np_chunk, language='Hebrew')['text']
                 time = timestamp[i]
                 wav_name = str(path.relative_to(self.wav_path)).replace("/", "_")
                 writer.writerow([wav_name, time[0], time[1], result])
                 print(f"Transcribed: {wav_name}, {time[0]}, {time[1]}, {result}")
 
-
         metadata.close()
-        print(f"\nCreated metadata csv file for {self.name}\n")
+
+        print(f"\nCreated metadata csv file for {self.name} with total length of {length} seconds\n")
 
 
     def generate_metadata(self, prepared_data_path: str, model):
@@ -92,14 +93,7 @@ class Dataset:
 
         self.length = 0
 
-        def pydub_to_np(audio: AudioSegment) -> (np.ndarray, int):
-            """
-            Converts pydub audio segment into np.float32 of shape [duration_in_seconds*sample_rate, channels],
-            where each value is in range [-1.0, 1.0].
-            Returns tuple (audio_np_array, sample_rate).
-            """
-            resampled_audio = audio.set_frame_rate(16000)
-            return np.frombuffer(resampled_audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0
+
 
         for i, path in tqdm(enumerate(audio_paths)):
             sound = AudioSegment.from_file(path)
@@ -244,6 +238,15 @@ def split_on_silence_with_time_stamps(audio_segment, min_silence_len=1000, silen
     ], [(max(start, 0), min(end, len(audio_segment)))
         for start, end in output_ranges]
 
+
+def pydub_to_np(audio: AudioSegment) -> (np.ndarray, int):
+    """
+    Converts pydub audio segment into np.float32 of shape [duration_in_seconds*sample_rate, channels],
+    where each value is in range [-1.0, 1.0].
+    Returns tuple (audio_np_array, sample_rate).
+    """
+    resampled_audio = audio.set_frame_rate(16000)
+    return np.frombuffer(resampled_audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0
 
 if __name__ == "__main__":
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
