@@ -49,8 +49,8 @@ class Dataset:
         length = 0
 
         paths = list(Path(self.wav_path).rglob(f"*.mp3"))
-        print(paths)
-        for path in tqdm(paths):
+        len_paths = len(path)
+        for counter, path in enumerate(paths):
             sound = AudioSegment.from_file(path)
             length += sound.duration_seconds
             chunks, timestamp = split_on_silence_with_time_stamps(
@@ -59,14 +59,13 @@ class Dataset:
                 silence_thresh=sound.dBFS - 16,
                 keep_silence=250,  # optional
             )
-            print(chunks)
             for i, chunk in enumerate(chunks):
                 np_chunk = pydub_to_np(chunk)
                 result = model.transcribe(np_chunk, language='Hebrew')['text']
                 time = timestamp[i]
                 wav_name = str(path.relative_to(self.wav_path)).replace("/", "_")
                 writer.writerow([wav_name, time[0], time[1], result])
-                print(f"Transcribed: {wav_name}, {time[0]}, {time[1]}, {result}")
+                print(f"[{counter /(len_paths * 1.0)}] Transcribed: {wav_name}, from {time[0]} to {time[1]} - {result}")
 
         metadata.close()
 
