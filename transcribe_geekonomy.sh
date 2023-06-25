@@ -18,5 +18,5 @@ python --version
 module load cuda/11.7
 module load cudnn
 
-python prepare_datasets.py transcribe osim-history
+python prepare_datasets.py transcribe geekonomy
 
