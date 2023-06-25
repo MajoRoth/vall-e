@@ -1,5 +1,6 @@
 import csv
 import os.path
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -249,6 +250,18 @@ def pydub_to_np(audio: AudioSegment) -> (np.ndarray, int):
     return np.frombuffer(resampled_audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0
 
 if __name__ == "__main__":
+    datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
+
+    if sys.argv[1] == "transcribe":
+        data_base_name = sys.argv[2]
+        print(f"Transcribing {data_base_name}")
+        datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
+
+        for dataset in datasets:
+            if dataset.name == data_base_name:
+                dataset.create_metadata_csv()
+
+
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
     #
     # datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
@@ -273,13 +286,5 @@ if __name__ == "__main__":
     #
     # for dataset in datasets:
     #     print(dataset)
-
-    debug_datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
-    datasets = [Dataset(ds_conf) for ds_conf in debug_datasets_config.datasets]
-
-    for dataset in datasets:
-        if dataset.name == "osim-history":
-            dataset.create_metadata_csv()
-
 
 
