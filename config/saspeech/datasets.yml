@@ -5,18 +5,22 @@ datasets:
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/wavs_24k/"
     metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/metadata.csv"
     labeled: True
+    length: 0
   -
     name: "hayot-kis-auto"
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data/wavs/"
     metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data/metadata.csv"
     labeled: True
+    length: 0
   -
     name: "osim-history"
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
     metadata_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history_metadata.csv"
     labeled: False
+    length: 0
   -
     name: "geekonomy"
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/geekonomy/"
     metadata_path: "/cs/dataset/Download/adiyoss/heb_data/geekonomy_metadata.csv"
     labeled: False
+    length: 0
