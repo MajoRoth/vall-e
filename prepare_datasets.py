@@ -59,7 +59,7 @@ class Dataset:
                 silence_thresh=sound.dBFS - 16,
                 keep_silence=250,  # optional
             )
-
+            print(chunks)
             for i, chunk in enumerate(chunks):
                 np_chunk = pydub_to_np(chunk)
                 result = model.transcribe(np_chunk, language='Hebrew')['text']
