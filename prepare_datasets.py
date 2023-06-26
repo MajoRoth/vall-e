@@ -262,6 +262,7 @@ def pydub_to_np(audio: AudioSegment) -> (np.ndarray, int):
     return np.frombuffer(resampled_audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0
 
 if __name__ == "__main__":
+    print(f"parameters: {str(sys.argv)}")
     datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets_debug.yml")
 
