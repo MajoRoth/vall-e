@@ -34,6 +34,7 @@ class Dataset:
 
 
     def create_metadata_csv(self, process_number=1, total_process_number=1):
+        print(f"Creating metadata for process {process_number} of total {total_process_number} processes")
 
         # if os.path.isfile(self.metadata_path):
         #     raise Exception("metadata.csv file exists, are you sure you want to overwrite it?")
@@ -295,8 +296,10 @@ if __name__ == "__main__":
 
         for dataset in datasets:
             if dataset.name == data_base_name:
-                if len(sys.argv) > 3:
-                    dataset.create_metadata_csv(sys.argv[3])
+                if len(sys.argv) > 4:
+                    proc_num = int(sys.argv[3])
+                    total_num = int(sys.argv[4])
+                    dataset.create_metadata_csv(proc_num, total_num)
                 else:
                     dataset.create_metadata_csv()
 
