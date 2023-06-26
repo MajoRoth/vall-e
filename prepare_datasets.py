@@ -56,7 +56,7 @@ class Dataset:
             now = datetime.now()
             file_name = str(path.relative_to(self.wav_path)).replace("/", "_")
 
-            result = model.transcribe(path, language='Hebrew')
+            result = model.transcribe(str(path), language='Hebrew')
             segments = result["segments"]
 
             for segment in segments:
