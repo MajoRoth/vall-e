@@ -44,8 +44,8 @@ class Dataset:
 
         print(f"Creating {self.metadata_path} for {self.name}")
 
-        # import whisper
-        # model = whisper.load_model("large-v2")
+        import whisper
+        model = whisper.load_model("large-v2")
         metadata_file_name = os.path.join(self.metadata_path, f"metadata_{process_number}_{total_process_number}.csv")
 
         metadata = open(metadata_file_name, mode='w')
@@ -62,13 +62,13 @@ class Dataset:
             now = datetime.now()
             file_name = str(path.relative_to(self.wav_path)).replace("/", "_")
 
-            # result = model.transcribe(str(path), language='Hebrew')
-            segments = [1, 2, 3, 4]# result["segments"]
+            result = model.transcribe(str(path), language='Hebrew')
+            segments = result["segments"]
 
             for segment in segments:
-                text = "test"  # segment['text']
-                start_time = 1# segment['start']
-                end_time =2 # segment['end']
+                text = segment['text']
+                start_time = segment['start']
+                end_time =segment['end']
                 print(f"Transcribed: {file_name}, {start_time}, {end_time}, {text}")
                 writer.writerow([file_name, start_time, end_time, text])
 
@@ -76,30 +76,6 @@ class Dataset:
 
             print(f"Processed {file_name} in {datetime.now() - now} seconds\ntotal recordings processed: {length / 60} minutes\n")
 
-
-            """
-                old audio manipuilation
-            """
-            # sound = AudioSegment.from_file(path)
-            # length += sound.duration_seconds
-            # chunks, timestamp = split_on_silence_with_time_stamps(
-            #     sound,
-            #     min_silence_len=500,
-            #     silence_thresh=sound.dBFS - 16,
-            #     keep_silence=250,  # optional
-            # )
-            # for i, chunk in enumerate(chunks):
-            #     now = datetime.now()
-            #     np_chunk = pydub_to_np(chunk)
-            #     result_dict = model.transcribe(np_chunk, language='Hebrew')
-            #     print(result_dict)
-            #     print(datetime.now() - now)
-            #     print(" ")
-            #     result = result_dict['text']
-            #     time = timestamp[i]
-            #     wav_name = str(path.relative_to(self.wav_path)).replace("/", "_")
-            #     writer.writerow([wav_name, time[0], time[1], result])
-            #     print(f"Transcribed: {wav_name}, {time[0]}, {time[1]}, {result}")
 
         metadata.close()
 
