@@ -52,37 +52,48 @@ class Dataset:
         paths = list(Path(self.wav_path).rglob(f"*.mp3"))
         print(paths)
         for path in tqdm(paths):
-            sound = AudioSegment.from_file(path)
-            length += sound.duration_seconds
-            chunks, timestamp = split_on_silence_with_time_stamps(
-                sound,
-                min_silence_len=500,
-                silence_thresh=sound.dBFS - 16,
-                keep_silence=250,  # optional
-            )
-            print("main recording")
+
             now = datetime.now()
-            np_sound = pydub_to_np(sound)
-            result_dict = model.transcribe(np_sound, language='Hebrew')
-            print(result_dict)
-            print(timestamp)
-            print(datetime.now() - now)
-            print("\nsub recording")
+            file_name = str(path.relative_to(self.wav_path)).replace("/", "_")
+
+            result = model.transcribe(path, language='Hebrew')
+            segments = result["segments"]
+
+            for segment in segments:
+                text = segment['text']
+                start_time = segment['start']
+                end_time = segment['end']
+                print(f"Transcribed: {file_name}, {start_time}, {end_time}, {text}")
+                writer.writerow([file_name, start_time, end_time, result])
+
+            length += end_time
+
+            print(f"Processed {file_name} in {datetime.now() - now} seconds\ntotal recordings processed: {length / 60} minutes\n")
 
 
-
-            for i, chunk in enumerate(chunks):
-                now = datetime.now()
-                np_chunk = pydub_to_np(chunk)
-                result_dict = model.transcribe(np_chunk, language='Hebrew')
-                print(result_dict)
-                print(datetime.now() - now)
-                print(" ")
-                result = result_dict['text']
-                time = timestamp[i]
-                wav_name = str(path.relative_to(self.wav_path)).replace("/", "_")
-                writer.writerow([wav_name, time[0], time[1], result])
-                print(f"Transcribed: {wav_name}, {time[0]}, {time[1]}, {result}")
+            """
+                old audio manipuilation
+            """
+            # sound = AudioSegment.from_file(path)
+            # length += sound.duration_seconds
+            # chunks, timestamp = split_on_silence_with_time_stamps(
+            #     sound,
+            #     min_silence_len=500,
+            #     silence_thresh=sound.dBFS - 16,
+            #     keep_silence=250,  # optional
+            # )
+            # for i, chunk in enumerate(chunks):
+            #     now = datetime.now()
+            #     np_chunk = pydub_to_np(chunk)
+            #     result_dict = model.transcribe(np_chunk, language='Hebrew')
+            #     print(result_dict)
+            #     print(datetime.now() - now)
+            #     print(" ")
+            #     result = result_dict['text']
+            #     time = timestamp[i]
+            #     wav_name = str(path.relative_to(self.wav_path)).replace("/", "_")
+            #     writer.writerow([wav_name, time[0], time[1], result])
+            #     print(f"Transcribed: {wav_name}, {time[0]}, {time[1]}, {result}")
 
         metadata.close()
 
