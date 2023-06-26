@@ -44,8 +44,8 @@ class Dataset:
 
         print(f"Creating {self.metadata_path} for {self.name}")
 
-        import whisper
-        model = whisper.load_model("large-v2")
+        # import whisper
+        # model = whisper.load_model("large-v2")
         metadata_file_name = os.path.join(self.metadata_path, f"metadata_{process_number}_{total_process_number}.csv")
 
         metadata = open(metadata_file_name, mode='w')
@@ -62,15 +62,15 @@ class Dataset:
             now = datetime.now()
             file_name = str(path.relative_to(self.wav_path)).replace("/", "_")
 
-            result = model.transcribe(str(path), language='Hebrew')
-            segments = result["segments"]
+            # result = model.transcribe(str(path), language='Hebrew')
+            segments = [1, 2, 3, 4]# result["segments"]
 
             for segment in segments:
-                text = segment['text']
-                start_time = segment['start']
-                end_time = segment['end']
+                text = "test"  # segment['text']
+                start_time = 1# segment['start']
+                end_time =2 # segment['end']
                 print(f"Transcribed: {file_name}, {start_time}, {end_time}, {text}")
-                writer.writerow([file_name, start_time, end_time, result])
+                writer.writerow([file_name, start_time, end_time, text])
 
             length += end_time
 
