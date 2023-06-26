@@ -1,6 +1,7 @@
 import csv
 import os.path
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -60,16 +61,23 @@ class Dataset:
                 keep_silence=250,  # optional
             )
             print("main recording")
+            now = datetime.now()
             np_sound = pydub_to_np(sound)
             result_dict = model.transcribe(np_sound, language='Hebrew')
             print(result_dict)
-            print("sub recording")
+            print(timestamp)
+            print(datetime.now() - now)
+            print("\nsub recording")
+
 
 
             for i, chunk in enumerate(chunks):
+                now = datetime.now()
                 np_chunk = pydub_to_np(chunk)
                 result_dict = model.transcribe(np_chunk, language='Hebrew')
                 print(result_dict)
+                print(datetime.now() - now)
+                print(" ")
                 result = result_dict['text']
                 time = timestamp[i]
                 wav_name = str(path.relative_to(self.wav_path)).replace("/", "_")
