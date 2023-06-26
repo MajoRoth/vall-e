@@ -59,9 +59,18 @@ class Dataset:
                 silence_thresh=sound.dBFS - 16,
                 keep_silence=250,  # optional
             )
+            print("main recording")
+            np_sound = pydub_to_np(sound)
+            result_dict = model.transcribe(np_sound, language='Hebrew')
+            print(result_dict)
+            print("sub recording")
+
+
             for i, chunk in enumerate(chunks):
                 np_chunk = pydub_to_np(chunk)
-                result = model.transcribe(np_chunk, language='Hebrew')['text']
+                result_dict = model.transcribe(np_chunk, language='Hebrew')
+                print(result_dict)
+                result = result_dict['text']
                 time = timestamp[i]
                 wav_name = str(path.relative_to(self.wav_path)).replace("/", "_")
                 writer.writerow([wav_name, time[0], time[1], result])
@@ -250,6 +259,7 @@ def pydub_to_np(audio: AudioSegment) -> (np.ndarray, int):
 
 if __name__ == "__main__":
     datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
+    # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets_debug.yml")
 
     if sys.argv[1] == "transcribe":
         data_base_name = sys.argv[2]
