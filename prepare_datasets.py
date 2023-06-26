@@ -54,7 +54,7 @@ class Dataset:
         length = 0
 
         paths = sorted(Path(self.wav_path).rglob(f"*.mp3"))
-        process_split = np.array_split(np.array(paths), numpy.array_split)[process_number - 1]
+        process_split = np.array_split(np.array(paths), total_process_number)[process_number - 1]
         print(process_split)
 
         for path in tqdm(process_split):
