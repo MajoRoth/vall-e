@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import numpy
 import numpy as np
 import pandas as pd
 import torch
@@ -32,9 +33,10 @@ class Dataset:
         self.length: bool = conf.length
 
 
-    def create_metadata_csv(self):
-        if os.path.isfile(self.metadata_path):
-            raise Exception("metadata.csv file exists, are you sure you want to overwrite it?")
+    def create_metadata_csv(self, process_number=1, total_process_number=1):
+
+        # if os.path.isfile(self.metadata_path):
+        #     raise Exception("metadata.csv file exists, are you sure you want to overwrite it?")
 
         if self.labeled:
             raise Exception(f"dataset is already labeled")
@@ -43,15 +45,18 @@ class Dataset:
 
         import whisper
         model = whisper.load_model("large-v2")
+        metadata_file_name = os.path.join(self.metadata_path, f"metadata_{process_number}_{total_process_number}.csv")
 
-        metadata = open(self.metadata_path, mode='w')
+        metadata = open(metadata_file_name, mode='w')
         writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         length = 0
 
-        paths = list(Path(self.wav_path).rglob(f"*.mp3"))
-        print(paths)
-        for path in tqdm(paths):
+        paths = sorted(Path(self.wav_path).rglob(f"*.mp3"))
+        process_split = np.array_split(np.array(paths), numpy.array_split)[process_number - 1]
+        print(process_split)
+
+        for path in tqdm(process_split):
 
             now = datetime.now()
             file_name = str(path.relative_to(self.wav_path)).replace("/", "_")
@@ -98,6 +103,9 @@ class Dataset:
         metadata.close()
 
         print(f"\nCreated metadata csv file for {self.name} with total length of {length} seconds\n")
+
+
+
 
 
     def generate_metadata(self, prepared_data_path: str, model):
@@ -287,8 +295,10 @@ if __name__ == "__main__":
 
         for dataset in datasets:
             if dataset.name == data_base_name:
-                dataset.create_metadata_csv()
-
+                if len(sys.argv) > 3:
+                    dataset.create_metadata_csv(sys.argv[3])
+                else:
+                    dataset.create_metadata_csv()
 
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
     #

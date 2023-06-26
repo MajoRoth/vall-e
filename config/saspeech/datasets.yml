@@ -15,12 +15,12 @@ datasets:
   -
     name: "osim-history"
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
-    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history_metadata.csv"
+    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history_metadata/"
     labeled: False
     length: 0
   -
     name: "geekonomy"
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/geekonomy/"
-    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/geekonomy_metadata.csv"
+    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/geekonomy_metadata/"
     labeled: False
     length: 0
