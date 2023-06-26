@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:1,vmem:10g
 #SBATCH --exclude=gsm-04
 #SBATCH --array=1-30
-#SBATCH --output=/cs/labs/adiyoss/amitroth/vall-e/slurm_outputs/%A_%a_whisper_osim_history.out
+#SBATCH --output=/cs/labs/adiyoss/amitroth/vall-e/slurm_outputs/%A_%a_%x.out
 
 dir=/cs/labs/adiyoss/amitroth/vall-e
 cd $dir
