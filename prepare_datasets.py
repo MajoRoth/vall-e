@@ -87,6 +87,7 @@ class Dataset:
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
 
         for metadata_path in metadata_paths:
+            print(f"generating qnt for {metadata_path}")
             data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
 
             for index, row in data_frame.iterrows():
@@ -111,8 +112,6 @@ class Dataset:
 
                     sliced_torch = torch_audio[:, start_index:end_index]
 
-                    torchaudio.save(_replace_file_extension(out_path, ".wav"), sliced_torch, sr)
-
                     qnt = encode(sliced_torch, sr, 'cuda')
                     torch.save(qnt.cpu(), out_path)
 
@@ -127,6 +126,8 @@ class Dataset:
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
 
         for metadata_path in metadata_paths:
+            print(f"generating phn for {metadata_path}")
+
             data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
 
             for index, row in data_frame.iterrows():
