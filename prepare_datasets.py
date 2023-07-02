@@ -102,7 +102,7 @@ class Dataset:
                     """
                     path, index, start_time, end_time, text = row
 
-                    file_name = _replace_file_extension(Path(self.get_file_name(path, idx=index), ".qnt.pt"))
+                    file_name = _replace_file_extension(Path(self.get_file_name(path, idx=index)), ".qnt.pt")
                     out_path = Path(os.path.join(prepared_data_path, file_name))
                     if out_path.exists():
                         print("Error: qnt path already exists")
