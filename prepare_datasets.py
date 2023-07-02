@@ -197,7 +197,7 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
 if __name__ == "__main__":
     print(f"parameters: {str(sys.argv)}")
     datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
-    datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets_debug.yml")
+    # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets_debug.yml")
 
     datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
 
@@ -216,7 +216,24 @@ if __name__ == "__main__":
                     dataset.create_metadata_csv()
 
     if sys.argv[1] == "quantize":
-        pass
+        data_base_name = sys.argv[2]
+        print(f"Quantizing {data_base_name}")
+
+        for dataset in datasets:
+            if dataset.name == data_base_name:
+                dataset.generate_qnt_files(datasets_config.prepared_data_path)
+
+    if sys.argv[1] == "normalize":
+        data_base_name = sys.argv[2]
+        print(f"Normalizing {data_base_name}")
+
+        for dataset in datasets:
+            if dataset.name == data_base_name:
+                dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+
+    if sys.argv[1] == "phoneme":
+        generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters())
+
 
     # for dataset in datasets:
     #     for i in range(3):
