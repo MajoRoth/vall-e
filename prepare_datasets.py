@@ -159,8 +159,8 @@ class Dataset:
 
 
     def convert_path_to_name_drop_suffix(self, path):
-        drop_suffix = path.parent / path.name.split(".")[0]
-        relative_path = str(Path(drop_suffix).relative_to(self.wav_path)).replace("/", "~")
+        drop_suffix = Path(path).parent / path.name.split(".")[0]
+        relative_path = str(drop_suffix.relative_to(self.wav_path)).replace("/", "~")
         return relative_path
 
 
