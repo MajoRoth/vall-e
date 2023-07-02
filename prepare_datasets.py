@@ -66,11 +66,13 @@ class Dataset:
             segments = result["segments"]
 
             for segment in segments:
+                print(segment)
                 text = segment['text']
                 start_time = segment['start']
                 end_time =segment['end']
-                print(f"Transcribed: {file_name}, {start_time}, {end_time}, {text}")
-                writer.writerow([file_name, start_time, end_time, text])
+                index = 1
+                print(f"Transcribed: {file_name}, {index}, {start_time}, {end_time}, {text}")
+                writer.writerow([file_name, index, start_time, end_time, text])
 
             length += end_time
 
@@ -81,67 +83,6 @@ class Dataset:
 
         print(f"\nCreated metadata csv file for {self.name} with total length of {length} seconds\n")
 
-
-
-
-
-    def generate_metadata(self, prepared_data_path: str, model):
-        """
-         generates metadata.csv in the specified path
-         creates .qnt.pt file for every segment
-        """
-        if self.labeled:
-            raise Exception(f"dataset is already labeled")
-
-        if os.path.isfile(self.metadata_path):
-            print(f"{self.name} is already labeled, skipping")
-            return 0
-
-        print(f"generating metadata for {self.name}")
-
-        metadata = open(self.metadata_path, mode='w')
-        writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-        audio_paths = list(Path(self.wav_path).rglob(f"*.wav")) + list(Path(self.wav_path).rglob(f"*.mp3"))
-
-        self.length = 0
-
-
-
-        for i, path in tqdm(enumerate(audio_paths)):
-            sound = AudioSegment.from_file(path)
-            sr = sound.frame_rate
-            chunks = silence.split_on_silence(
-                sound,
-                min_silence_len=500,
-                silence_thresh=sound.dBFS - 16,
-                keep_silence=250,  # optional
-            )
-
-            for j, chunk in enumerate(chunks):
-                np_chunk = pydub_to_np(chunk)
-                self.length += chunk.duration_seconds
-
-                # write to csv
-                file_name = f"{i}-{j}"
-                result = model.transcribe(np_chunk, language='Hebrew')['text']
-                writer.writerow([file_name, result])
-
-                # create .qnt.pt file
-                qnt_file_name = f"{self.name}-{file_name}"
-                out_path = os.path.join(prepared_data_path, qnt_file_name + ".qnt.pt")
-                print(f"{path} - {file_name} - {result}")
-
-                if os.path.isfile(out_path):
-                    print(f"Error: qnt path {out_path} already exists")
-                    continue
-
-                torch_chunk = torch.from_numpy(np_chunk).unsqueeze(0)
-                qnt = encode(torch_chunk, sr, 'cuda')
-                torch.save(qnt.cpu(), out_path)
-
-        metadata.close()
-        print(f"Generated Metadata for {self.name}")
 
     def generate_qnt_files(self, prepared_data_path: str):
         if not self.labeled:
@@ -197,69 +138,6 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
             f.write(" ".join(phones))
 
 
-def split_on_silence_with_time_stamps(audio_segment, min_silence_len=1000, silence_thresh=-16, keep_silence=100,
-                     seek_step=1):
-    """
-    Returns list of audio segments from splitting audio_segment on silent sections
-
-    audio_segment - original pydub.AudioSegment() object
-
-    min_silence_len - (in ms) minimum length of a silence to be used for
-        a split. default: 1000ms
-
-    silence_thresh - (in dBFS) anything quieter than this will be
-        considered silence. default: -16dBFS
-
-    keep_silence - (in ms or True/False) leave some silence at the beginning
-        and end of the chunks. Keeps the sound from sounding like it
-        is abruptly cut off.
-        When the length of the silence is less than the keep_silence duration
-        it is split evenly between the preceding and following non-silent
-        segments.
-        If True is specified, all the silence is kept, if False none is kept.
-        default: 100ms
-
-    seek_step - step size for interating over the segment in ms
-    """
-
-    # from the itertools documentation
-    def pairwise(iterable):
-        "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-        a, b = itertools.tee(iterable)
-        next(b, None)
-        return zip(a, b)
-
-    if isinstance(keep_silence, bool):
-        keep_silence = len(audio_segment) if keep_silence else 0
-
-    output_ranges = [
-        [start - keep_silence, end + keep_silence]
-        for (start, end)
-        in silence.detect_nonsilent(audio_segment, min_silence_len, silence_thresh, seek_step)
-    ]
-
-    for range_i, range_ii in pairwise(output_ranges):
-        last_end = range_i[1]
-        next_start = range_ii[0]
-        if next_start < last_end:
-            range_i[1] = (last_end + next_start) // 2
-            range_ii[0] = range_i[1]
-
-    return [
-        audio_segment[max(start, 0): min(end, len(audio_segment))]
-        for start, end in output_ranges
-    ], [(max(start, 0), min(end, len(audio_segment)))
-        for start, end in output_ranges]
-
-
-def pydub_to_np(audio: AudioSegment) -> (np.ndarray, int):
-    """
-    Converts pydub audio segment into np.float32 of shape [duration_in_seconds*sample_rate, channels],
-    where each value is in range [-1.0, 1.0].
-    Returns tuple (audio_np_array, sample_rate).
-    """
-    resampled_audio = audio.set_frame_rate(16000)
-    return np.frombuffer(resampled_audio.raw_data, np.int16).flatten().astype(np.float32) / 32768.0
 
 if __name__ == "__main__":
     print(f"parameters: {str(sys.argv)}")
@@ -279,6 +157,9 @@ if __name__ == "__main__":
                     dataset.create_metadata_csv(proc_num, total_num)
                 else:
                     dataset.create_metadata_csv()
+
+    if sys.argv[1] == "quantize":
+        pass
 
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
     #
