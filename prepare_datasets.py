@@ -134,7 +134,7 @@ class Dataset:
             for index, row in data_frame.iterrows():
                 if len(row) == 5:
                     path, index, start_time, end_time, text = row
-                    file_name = _replace_file_extension(Path(self.get_file_name(path, idx=index), ".normalized.txt"))
+                    file_name = _replace_file_extension(Path(self.get_file_name(path, idx=index)), ".normalized.txt")
                     with open(os.path.join(prepared_data_path, file_name), 'w') as txt_file:
                             txt_file.write(
                                 HebrewTextUtils.remove_nikud(text)
