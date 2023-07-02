@@ -158,15 +158,14 @@ class Dataset:
         #         txt_file.close()
 
 
-    def convert_path_to_name(self, path):
-        return str(Path(path).relative_to(self.wav_path)).replace("/", "~")
+    def convert_path_to_name_drop_suffix(self, path):
+        drop_suffix = path.parent / path.name.split(".")[0]
+        relative_path = str(Path(drop_suffix).relative_to(self.wav_path)).replace("/", "~")
+        return relative_path
 
 
-    def get_file_name(self, path, idx=None):
-        result = f"{self.name}~{self.convert_path_to_name(path)}"
-
-        if idx is not None:
-            result += f"@{int(idx)}"
+    def get_file_name(self, path, idx, suffix):
+        result = f"{self.name}~{self.convert_path_to_name_drop_suffix(path)}@{int(idx)}.{suffix}"
 
         return result
 
