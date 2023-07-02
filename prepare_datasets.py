@@ -45,8 +45,8 @@ class Dataset:
 
         print(f"Creating {self.metadata_path} for {self.name}")
 
-        # import whisper
-        # model = whisper.load_model("large-v2")
+        import whisper
+        model = whisper.load_model("large-v2")
         metadata_file_name = os.path.join(self.metadata_path, f"metadata_{process_number}_{total_process_number}.csv")
 
         metadata = open(metadata_file_name, mode='w')
@@ -62,13 +62,8 @@ class Dataset:
 
             now = datetime.now()
 
-            # result = model.transcribe(str(path), language='Hebrew')
-            # segments = result["segments"]
-            segments = [
-                {'text': "שלום זו בדיקה", 'start': 1, 'end': 2, 'id': 0}, {'text': "שלום זו בדיקה", 'start': 1, 'end': 2, 'id': 1},
-                {'text': "שלום זו בדיקה", 'start': 1, 'end': 2, 'id': 2},
-                {'text': "שלום זו בדיקה", 'start': 1, 'end': 2, 'id': 3}
-            ]
+            result = model.transcribe(str(path), language='Hebrew')
+            segments = result["segments"]
 
             for segment in segments:
                 text = segment['text']
@@ -115,6 +110,8 @@ class Dataset:
                     end_index = int(end_time * sr)
 
                     sliced_torch = torch_audio[:, start_index:end_index]
+
+                    torchaudio.save(_replace_file_extension(out_path, "wav"), sliced_torch, sr)
 
                     qnt = encode(sliced_torch, sr, 'cuda')
                     torch.save(qnt.cpu(), out_path)
