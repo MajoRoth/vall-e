@@ -111,7 +111,7 @@ class Dataset:
 
                     sliced_torch = torch_audio[:, start_index:end_index]
 
-                    torchaudio.save(_replace_file_extension(out_path, "wav"), sliced_torch, sr)
+                    torchaudio.save(_replace_file_extension(out_path, ".wav"), sliced_torch, sr)
 
                     qnt = encode(sliced_torch, sr, 'cuda')
                     torch.save(qnt.cpu(), out_path)
@@ -217,9 +217,9 @@ if __name__ == "__main__":
     # if sys.argv[1] == "quantize":
     #     pass
 
-    for dataset in datasets:
-        for i in range(3):
-            dataset.create_metadata_csv(i, 3)
+    # for dataset in datasets:
+    #     for i in range(3):
+    #         dataset.create_metadata_csv(i, 3)
 
     print("QNT")
     for dataset in datasets:
