@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torchaudio
+
 import soundfile as sf
 
 
@@ -60,23 +61,21 @@ class Dataset:
         for path in tqdm(process_split):
 
             now = datetime.now()
-            file_name = str(path.relative_to(self.wav_path)).replace("/", "_")
 
             result = model.transcribe(str(path), language='Hebrew')
             segments = result["segments"]
 
             for segment in segments:
-                print(segment)
                 text = segment['text']
                 start_time = segment['start']
                 end_time =segment['end']
-                index = 1
-                print(f"Transcribed: {file_name}, {index}, {start_time}, {end_time}, {text}")
-                writer.writerow([file_name, index, start_time, end_time, text])
+                index = segment['id']
+                print(f"Transcribed: {str(path)}, {index}, {start_time}, {end_time}, {text}")
+                writer.writerow([str(path), index, start_time, end_time, text])
 
             length += end_time
 
-            print(f"Processed {file_name} in {datetime.now() - now} seconds\ntotal recordings processed: {length / 60} minutes\n")
+            print(f"Processed {str(path)} in {datetime.now() - now} seconds\ntotal recordings processed: {length / 60} minutes\n")
 
 
         metadata.close()
@@ -85,21 +84,59 @@ class Dataset:
 
 
     def generate_qnt_files(self, prepared_data_path: str):
-        if not self.labeled:
-            raise Exception(f"dataset not labeled labeled")
+        metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
 
-        print(f"generating qnt for {self.name}")
+        for metadata_path in metadata_paths:
+            data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
 
-        paths = list(Path(self.wav_path).rglob(f"*.wav"))
+            for index, row in data_frame.iterrows():
 
-        for path in tqdm(paths):
-            file_name = _replace_file_extension(Path(f"{self.name}-{os.path.basename(path)}"), ".qnt.pt")
-            out_path = Path(os.path.join(prepared_data_path, file_name))
-            if out_path.exists():
-                print("Error: qnt path already exists")
-                continue
-            qnt = encode_from_file(path)
-            torch.save(qnt.cpu(), out_path)
+                if len(row) == 5:
+                    """
+                        we have sliced recordings
+                    """
+                    path, index, start_time, end_time, text = row
+
+                    file_name = _replace_file_extension(Path(self.get_file_name(path, idx=index), ".qnt.pt"))
+                    out_path = Path(os.path.join(prepared_data_path, file_name))
+                    if out_path.exists():
+                        print("Error: qnt path already exists")
+                        continue
+
+
+                    torch_audio, sr = torchaudio.load(path)
+
+                    start_index = int(start_time * sr)
+                    end_index = int(end_time * sr)
+
+                    sliced_torch = torch_audio[:, start_index:end_index]
+
+                    qnt = encode(sliced_torch, sr, 'cuda')
+                    torch.save(qnt.cpu(), out_path)
+
+                if len(row) == 2:
+                    """
+                        we have single recordings
+                    """
+
+
+
+
+        # if not self.labeled:
+        #     raise Exception(f"dataset not labeled labeled")
+        #
+        # print(f"generating qnt for {self.name}")
+        #
+        # paths = list(Path(self.wav_path).rglob(f"*.wav"))
+        #
+        # for path in tqdm(paths):
+        #     file_name = _replace_file_extension(Path(f"{self.name}-{os.path.basename(path)}"), ".qnt.pt")
+        #     out_path = Path(os.path.join(prepared_data_path, file_name))
+        #     if out_path.exists():
+        #         print("Error: qnt path already exists")
+        #         continue
+        #     qnt = encode_from_file(path)
+        #     torch.save(qnt.cpu(), out_path)
 
     def generate_normalized_txt_files(self, prepared_data_path: str):
         print(f"creating normalized txt for {self.name}")
@@ -113,6 +150,19 @@ class Dataset:
                     HebrewTextUtils.remove_nikud(row[1])
                 )
                 txt_file.close()
+
+
+    def convert_path_to_name(self, path):
+        return str(path.relative_to(self.wav_path)).replace("/", "~")
+
+
+    def get_file_name(self, path, idx=None):
+        result = f"{self.name}~{self.convert_path_to_name(path)}"
+
+        if idx is not None:
+            result += f"@{int(idx)}"
+
+        return result
 
     def __str__(self):
         return f"Dataset - name: {self.name}, length: {self.length}"
@@ -142,12 +192,14 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
 if __name__ == "__main__":
     print(f"parameters: {str(sys.argv)}")
     datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
-    # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets_debug.yml")
+    datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets_debug.yml")
+
+    datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
+
 
     if sys.argv[1] == "transcribe":
         data_base_name = sys.argv[2]
         print(f"Transcribing {data_base_name}")
-        datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
 
         for dataset in datasets:
             if dataset.name == data_base_name:
@@ -160,6 +212,13 @@ if __name__ == "__main__":
 
     if sys.argv[1] == "quantize":
         pass
+
+    for dataset in datasets:
+        for i in range(3):
+            dataset.create_metadata_csv(i, 3)
+
+    for dataset in datasets:
+        dataset.generate_qnt_files("")
 
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
     #
