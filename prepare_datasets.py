@@ -45,8 +45,8 @@ class Dataset:
 
         print(f"Creating {self.metadata_path} for {self.name}")
 
-        import whisper
-        model = whisper.load_model("large-v2")
+        # import whisper
+        # model = whisper.load_model("large-v2")
         metadata_file_name = os.path.join(self.metadata_path, f"metadata_{process_number}_{total_process_number}.csv")
 
         metadata = open(metadata_file_name, mode='w')
@@ -62,8 +62,13 @@ class Dataset:
 
             now = datetime.now()
 
-            result = model.transcribe(str(path), language='Hebrew')
-            segments = result["segments"]
+            # result = model.transcribe(str(path), language='Hebrew')
+            # segments = result["segments"]
+            segments = [
+                {'text': "שלום זו בדיקה", 'start': 1, 'end': 2, 'id': 0}, {'text': "שלום זו בדיקה", 'start': 1, 'end': 2, 'id': 1},
+                {'text': "שלום זו בדיקה", 'start': 1, 'end': 2, 'id': 2},
+                {'text': "שלום זו בדיקה", 'start': 1, 'end': 2, 'id': 3}
+            ]
 
             for segment in segments:
                 text = segment['text']
@@ -120,36 +125,37 @@ class Dataset:
                     """
 
 
-
-
-        # if not self.labeled:
-        #     raise Exception(f"dataset not labeled labeled")
-        #
-        # print(f"generating qnt for {self.name}")
-        #
-        # paths = list(Path(self.wav_path).rglob(f"*.wav"))
-        #
-        # for path in tqdm(paths):
-        #     file_name = _replace_file_extension(Path(f"{self.name}-{os.path.basename(path)}"), ".qnt.pt")
-        #     out_path = Path(os.path.join(prepared_data_path, file_name))
-        #     if out_path.exists():
-        #         print("Error: qnt path already exists")
-        #         continue
-        #     qnt = encode_from_file(path)
-        #     torch.save(qnt.cpu(), out_path)
-
     def generate_normalized_txt_files(self, prepared_data_path: str):
-        print(f"creating normalized txt for {self.name}")
+        metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
 
-        data_frame = pd.read_csv(self.metadata_path, encoding="utf-8", sep='|', header=None)
+        for metadata_path in metadata_paths:
+            data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
 
-        for index, row in data_frame.iterrows():
-            with open(os.path.join(prepared_data_path, f"{self.name}-{row[0]}.normalized.txt"),
-                      'w') as txt_file:
-                txt_file.write(
-                    HebrewTextUtils.remove_nikud(row[1])
-                )
-                txt_file.close()
+            for index, row in data_frame.iterrows():
+                if len(row) == 5:
+                    path, index, start_time, end_time, text = row
+                    file_name = _replace_file_extension(Path(self.get_file_name(path, idx=index), ".normalized.txt"))
+                    with open(os.path.join(prepared_data_path, file_name), 'w') as txt_file:
+                            txt_file.write(
+                                HebrewTextUtils.remove_nikud(text)
+                            )
+                            txt_file.close()
+
+                if len(row) == 2:
+                    pass
+
+
+        # print(f"creating normalized txt for {self.name}")
+        #
+        # data_frame = pd.read_csv(self.metadata_path, encoding="utf-8", sep='|', header=None)
+        #
+        # for index, row in data_frame.iterrows():
+        #     with open(os.path.join(prepared_data_path, f"{self.name}-{row[0]}.normalized.txt"),
+        #               'w') as txt_file:
+        #         txt_file.write(
+        #             HebrewTextUtils.remove_nikud(row[1])
+        #         )
+        #         txt_file.close()
 
 
     def convert_path_to_name(self, path):
@@ -217,8 +223,13 @@ if __name__ == "__main__":
         for i in range(3):
             dataset.create_metadata_csv(i, 3)
 
+    print("QNT")
     for dataset in datasets:
-        dataset.generate_qnt_files("")
+        dataset.generate_qnt_files(datasets_config.prepared_data_path)
+
+    print("TXT")
+    for dataset in datasets:
+        dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
 
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
     #
