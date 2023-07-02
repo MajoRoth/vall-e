@@ -153,7 +153,7 @@ class Dataset:
 
 
     def convert_path_to_name(self, path):
-        return str(path.relative_to(self.wav_path)).replace("/", "~")
+        return str(Path(path).relative_to(self.wav_path)).replace("/", "~")
 
 
     def get_file_name(self, path, idx=None):
