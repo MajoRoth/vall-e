@@ -202,35 +202,35 @@ if __name__ == "__main__":
     datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
 
 
-    # if sys.argv[1] == "transcribe":
-    #     data_base_name = sys.argv[2]
-    #     print(f"Transcribing {data_base_name}")
-    #
-    #     for dataset in datasets:
-    #         if dataset.name == data_base_name:
-    #             if len(sys.argv) > 4:
-    #                 proc_num = int(sys.argv[3])
-    #                 total_num = int(sys.argv[4])
-    #                 dataset.create_metadata_csv(proc_num, total_num)
-    #             else:
-    #                 dataset.create_metadata_csv()
-    #
-    # if sys.argv[1] == "quantize":
-    #     pass
+    if sys.argv[1] == "transcribe":
+        data_base_name = sys.argv[2]
+        print(f"Transcribing {data_base_name}")
+
+        for dataset in datasets:
+            if dataset.name == data_base_name:
+                if len(sys.argv) > 4:
+                    proc_num = int(sys.argv[3])
+                    total_num = int(sys.argv[4])
+                    dataset.create_metadata_csv(proc_num, total_num)
+                else:
+                    dataset.create_metadata_csv()
+
+    if sys.argv[1] == "quantize":
+        pass
 
     # for dataset in datasets:
     #     for i in range(3):
     #         dataset.create_metadata_csv(i, 3)
 
-    print("QNT")
-    for dataset in datasets:
-        dataset.generate_qnt_files(datasets_config.prepared_data_path)
-
-    print("TXT")
-    for dataset in datasets:
-        dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
-
-    generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters())
+    # print("QNT")
+    # for dataset in datasets:
+    #     dataset.generate_qnt_files(datasets_config.prepared_data_path)
+    #
+    # print("TXT")
+    # for dataset in datasets:
+    #     dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+    #
+    # generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters())
 
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
     #
