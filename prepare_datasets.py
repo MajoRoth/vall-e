@@ -231,6 +231,8 @@ if __name__ == "__main__":
     for dataset in datasets:
         dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
 
+    generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters())
+
     # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
     #
     # datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
