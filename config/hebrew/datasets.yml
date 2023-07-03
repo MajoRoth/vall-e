@@ -18,7 +18,7 @@ datasets:
     metadata_path: "/cs/dataset/Download/adiyoss/heb_data/geekonomy_metadata/"
     labeled: False
     length: 1200  # Hours
-  -
+#  -
 #    name: "hayot-kis-auto"
 #    wav_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data/wavs/"
 #    metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_automatic_data/metadata.csv"
