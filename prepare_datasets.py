@@ -226,8 +226,9 @@ if __name__ == "__main__":
 
     if sys.argv[1] == "quantize":
         for dataset in datasets:
-            print(f"Quantizing: {dataset}")
-            dataset.generate_qnt_files(datasets_config.prepared_data_path)
+            if dataset.name = "hayot-kis-gold":
+                print(f"Quantizing: {dataset}")
+                dataset.generate_qnt_files(datasets_config.prepared_data_path)
 
     if sys.argv[1] == "normalize":
         for dataset in datasets:
