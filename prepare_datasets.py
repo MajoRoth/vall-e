@@ -83,13 +83,13 @@ class Dataset:
         print(f"\nCreated metadata csv file for {self.name} with total length of {length} seconds\n")
 
 
-    def generate_qnt_files(self, prepared_data_path: str):
+    def generate_qnt_files(self, prepared_data_path: str, process_number=1, total_process_number=1):
         if dataset.labeled:
-            self.generate_qnt_files_labled(prepared_data_path)
+            self.generate_qnt_files_labled(prepared_data_path, process_number, total_process_number)
         else:
-            self.generate_qnt_files_unlabled(prepared_data_path)
+            self.generate_qnt_files_unlabled(prepared_data_path, process_number, total_process_number)
 
-    def generate_qnt_files_labled(self, prepared_data_path: str):
+    def generate_qnt_files_labled(self, prepared_data_path: str, process_number=1, total_process_number=1):
         paths = list(Path(self.wav_path).rglob(f"*.wav"))
 
         for path in tqdm(paths):
@@ -102,7 +102,7 @@ class Dataset:
             qnt = encode_from_file(path)
             torch.save(qnt.cpu(), out_path)
 
-    def generate_qnt_files_unlabled(self, prepared_data_path: str):
+    def generate_qnt_files_unlabled(self, prepared_data_path: str, process_number=1, total_process_number=1):
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
 
         for metadata_path in metadata_paths:
@@ -130,9 +130,12 @@ class Dataset:
                     end_index = int(end_time * sr)
 
                     sliced_torch = torch_audio[:, start_index:end_index]
-
-                    qnt = encode(sliced_torch, sr, 'cuda')
-                    torch.save(qnt.cpu(), out_path)
+                    try:
+                        qnt = encode(sliced_torch, sr, 'cuda')
+                        torch.save(qnt.cpu(), out_path)
+                    except Exception as e:
+                        print(f"Couldnt procerss {path}, {index}, {start_time}, {end_time}, {text}")
+                        print(f"due to an error {e}")
 
                 else:
                     raise Exception(f"dataset is not in correct format")
@@ -228,7 +231,9 @@ if __name__ == "__main__":
         for dataset in datasets:
             if dataset.name == "osim-history":
                 print(f"Quantizing: {dataset}")
-                dataset.generate_qnt_files(datasets_config.prepared_data_path)
+                proc_num = int(sys.argv[3])
+                total_num = int(sys.argv[4])
+                dataset.generate_qnt_files(datasets_config.prepared_data_path, proc_num, total_num)
 
     if sys.argv[1] == "normalize":
         for dataset in datasets:
