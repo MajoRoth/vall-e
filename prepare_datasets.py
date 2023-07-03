@@ -84,6 +84,25 @@ class Dataset:
 
 
     def generate_qnt_files(self, prepared_data_path: str):
+        if dataset.labeled:
+            self.generate_qnt_files_labled(prepared_data_path)
+        else:
+            self.generate_qnt_files_unlabled(prepared_data_path)
+
+    def generate_qnt_files_labled(self, prepared_data_path: str):
+        paths = list(Path(self.wav_path).rglob(f"*.wav"))
+
+        for path in tqdm(paths):
+            file_name = self.get_file_name(path, idx=0, suffix="qnt.pt")
+            out_path = Path(os.path.join(prepared_data_path, file_name))
+            if out_path.exists():
+                print("Error: qnt path already exists")
+                continue
+
+            qnt = encode_from_file(path)
+            torch.save(qnt.cpu(), out_path)
+
+    def generate_qnt_files_unlabled(self, prepared_data_path: str):
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
 
         for metadata_path in metadata_paths:
@@ -115,11 +134,8 @@ class Dataset:
                     qnt = encode(sliced_torch, sr, 'cuda')
                     torch.save(qnt.cpu(), out_path)
 
-                if len(row) == 2:
-                    """
-                        we have single recordings
-                    """
-                    pass
+                else:
+                    raise Exception(f"dataset is not in correct format")
 
 
     def generate_normalized_txt_files(self, prepared_data_path: str):
@@ -141,20 +157,13 @@ class Dataset:
                             txt_file.close()
 
                 if len(row) == 2:
-                    pass
-
-
-        # print(f"creating normalized txt for {self.name}")
-        #
-        # data_frame = pd.read_csv(self.metadata_path, encoding="utf-8", sep='|', header=None)
-        #
-        # for index, row in data_frame.iterrows():
-        #     with open(os.path.join(prepared_data_path, f"{self.name}-{row[0]}.normalized.txt"),
-        #               'w') as txt_file:
-        #         txt_file.write(
-        #             HebrewTextUtils.remove_nikud(row[1])
-        #         )
-        #         txt_file.close()
+                    path, text = row
+                    file_name = self.get_file_name(path, idx=0, suffix="normalized.txt")
+                    with open(os.path.join(prepared_data_path, file_name), 'w') as txt_file:
+                            txt_file.write(
+                                HebrewTextUtils.remove_nikud(text)
+                            )
+                            txt_file.close()
 
 
     def convert_path_to_name_drop_suffix(self, path):
@@ -196,8 +205,8 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
 
 if __name__ == "__main__":
     print(f"parameters: {str(sys.argv)}")
-    datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets.yml")
-    # datasets_config = omegaconf.OmegaConf.load("config/saspeech/datasets_debug.yml")
+    datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets.yml")
+    # datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets_debug.yml")
 
     datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
 
@@ -216,20 +225,14 @@ if __name__ == "__main__":
                     dataset.create_metadata_csv()
 
     if sys.argv[1] == "quantize":
-        data_base_name = sys.argv[2]
-        print(f"Quantizing {data_base_name}")
-
         for dataset in datasets:
-            if dataset.name == data_base_name:
-                dataset.generate_qnt_files(datasets_config.prepared_data_path)
+            print(f"Quantizing: {dataset}")
+            dataset.generate_qnt_files(datasets_config.prepared_data_path)
 
     if sys.argv[1] == "normalize":
-        data_base_name = sys.argv[2]
-        print(f"Normalizing {data_base_name}")
-
         for dataset in datasets:
-            if dataset.name == data_base_name:
-                dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+            print(f"Normalizing: {dataset}")
+            dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
 
     if sys.argv[1] == "phoneme":
         generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters())

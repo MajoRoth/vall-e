@@ -18,5 +18,5 @@ python --version
 module load cuda/11.7
 module load cudnn
 
-python -m vall_e.train yaml=config/saspeech/ar.yml
+python -m vall_e.train yaml=config/hebrew/ar.yml
 

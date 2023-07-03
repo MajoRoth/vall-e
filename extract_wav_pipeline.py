@@ -17,7 +17,7 @@ def main():
     FORMAT = "%d-%m-%Y-%H:%M"
     _writer = SummaryWriter(log_dir=f"runs/wavs_{now.strftime(FORMAT)}")
 
-    yaml_cfg = OmegaConf.load("config/saspeech/config.yml")
+    yaml_cfg = OmegaConf.load("config/hebrew/config.yml")
 
     latest_ar = None
     new_ar_ckpt = False
@@ -30,7 +30,7 @@ def main():
             latest_ar_current_value = f.read()
 
             if latest_ar_current_value != latest_ar:
-                os.system(f"python -m vall_e.export {yaml_cfg.ar_ckpt_path} yaml=config/saspeech/ar.yml")
+                os.system(f"python -m vall_e.export {yaml_cfg.ar_ckpt_path} yaml=config/hebrew/ar.yml")
                 print(" ")
                 print(f"EXPORTED AR {latest_ar_current_value}")
                 print(" ")
@@ -49,7 +49,7 @@ def main():
             latest_nar_current_value = f.read()
 
             if latest_nar_current_value != latest_nar:
-                os.system(f"python -m vall_e.export {yaml_cfg.nar_ckpt_path} yaml=config/saspeech/nar.yml")
+                os.system(f"python -m vall_e.export {yaml_cfg.nar_ckpt_path} yaml=config/hebrew/nar.yml")
                 print(" ")
                 print(f"EXPORTED NAR {latest_nar_current_value}")
                 print(" ")
@@ -87,8 +87,8 @@ def main():
                 main_test(text=sentence,
                           reference=yaml_cfg.reference_path_hayot,
                           out_path=output_path,
-                          ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/ar.pt",
-                          nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/saspeech/nar.pt",
+                          ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/hebrew/ar.pt",
+                          nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/hebrew/nar.pt",
                           device="cuda")
 
 
