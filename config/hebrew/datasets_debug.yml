@@ -1,0 +1,16 @@
+prepared_data_path: "/cs/dataset/Download/adiyoss/heb_data/prepared_valle_data"
+datasets:
+  -
+    name: "test1"
+    wav_path: "/cs/dataset/Download/adiyoss/heb_data/test/first_podcast"
+    metadata_path: "//cs/dataset/Download/adiyoss/heb_data/test/first_podcast_metadata/"
+    labeled: False
+    length: 0
+  -
+    name: "test2"
+    wav_path: "/cs/dataset/Download/adiyoss/heb_data/test/second_podcast"
+    metadata_path: "//cs/dataset/Download/adiyoss/heb_data/test/second_podcast_metadata/"
+    labeled: False
+    length: 0
+
+

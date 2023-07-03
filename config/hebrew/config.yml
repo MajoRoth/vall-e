@@ -1,0 +1,15 @@
+
+
+# For inference
+output_path: "/cs/labs/adiyoss/amitroth/vall-e/output/hebrew"
+ar_ckpt_path: "/cs/labs/adiyoss/amitroth/vall-e/zoo/hebrew/ar.pt"
+nar_ckpt_path: "/cs/labs/adiyoss/amitroth/vall-e/zoo/hebrew/nar.pt"
+reference_path_hayot: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/hayot.wav"
+reference_path_amit: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/amit.wav"
+reference_path_shahar: "/cs/labs/adiyoss/amitroth/vall-e/data/reference/shahar.wav"
+
+
+
+# For ckpts
+latest_ar_path: "/cs/labs/adiyoss/amitroth/vall-e/ckpts/hebrew/ar/model/latest"
+latest_nar_path: "/cs/labs/adiyoss/amitroth/vall-e/ckpts/hebrew/nar/model/latest"
