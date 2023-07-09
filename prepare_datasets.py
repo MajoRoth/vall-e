@@ -146,11 +146,11 @@ class Dataset:
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
 
         for metadata_path in metadata_paths:
-            print(f"generating phn for {metadata_path}")
+            print(f"generating txt for {metadata_path}")
 
             data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
 
-            for index, row in data_frame.iterrows():
+            for index, row in tqdm(data_frame.iterrows()):
                 if len(row) == 5:
                     path, index, start_time, end_time, text = row
                     file_name = self.get_file_name(path, idx=index, suffix="normalized.txt")
@@ -168,6 +168,9 @@ class Dataset:
                                 HebrewTextUtils.remove_nikud(text)
                             )
                             txt_file.close()
+
+                else:
+                    raise Exception(f"dataset is not in correct format")
 
 
     def convert_path_to_name_drop_suffix(self, path):
