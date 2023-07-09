@@ -161,8 +161,8 @@ class Dataset:
                             )
                             txt_file.close()
 
-                elif len(row) == 2:
-                    path, text = row
+                elif len(row) == 3:
+                    path, text, _ = row
                     file_name = self.get_file_name(path, idx=0, suffix="normalized.txt")
                     with open(os.path.join(prepared_data_path, file_name), 'w') as txt_file:
                             txt_file.write(
@@ -246,17 +246,18 @@ if __name__ == "__main__":
                     dataset.generate_qnt_files(datasets_config.prepared_data_path)
 
     if sys.argv[1] == "normalize":
-        if len(sys.argv) > 4:
-            proc_num = int(sys.argv[2])
-            total_num = int(sys.argv[3])
-            for dataset in datasets:
-                print(f"Normalizing: {dataset}")
-                dataset.generate_normalized_txt_files(datasets_config.prepared_data_path, proc_num, total_num)
+        data_base_name = sys.argv[2]
+        print(f"Normalizing {data_base_name}")
 
-        else:
-            for dataset in datasets:
-                print(f"Normalizing: {dataset}")
-                dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+        for dataset in datasets:
+            if dataset.name == data_base_name:
+                if len(sys.argv) > 4:
+                    proc_num = int(sys.argv[3])
+                    total_num = int(sys.argv[4])
+                    dataset.generate_normalized_txt_files(datasets_config.prepared_data_path, proc_num, total_num)
+                else:
+                    dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+
 
 
     if sys.argv[1] == "phoneme":
