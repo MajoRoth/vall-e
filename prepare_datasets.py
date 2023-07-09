@@ -177,8 +177,10 @@ class Dataset:
     def convert_path_to_name_drop_suffix(self, path):
         path = Path(path)
         drop_suffix = path.parent / path.name.split(".")[0]
-        relative_path = str(drop_suffix.relative_to(self.wav_path)).replace("/", "~")
-        return relative_path
+        if drop_suffix.is_relative_to(self.wav_path):
+            return str(drop_suffix.relative_to(self.wav_path)).replace("/", "~")
+        else:
+            return str(drop_suffix).replace("/", "~")
 
 
     def get_file_name(self, path, idx, suffix):

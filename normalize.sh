@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=normalize_geekonomy
+#SBATCH --job-name=normalize_hayot
 #SBATCH -c4
 #SBATCH --mem=16g
 #SBATCH --time=7-0
