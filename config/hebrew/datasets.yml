@@ -25,3 +25,12 @@ datasets:
 #    labeled: True
 #    length: 0
 #  -
+
+
+#name:
+#origianl_wav_path:
+#metadata_path:
+#prepared_data_path:
+#  labeled: True
+#  length: 0
+
