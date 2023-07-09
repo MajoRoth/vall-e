@@ -247,8 +247,8 @@ if __name__ == "__main__":
 
     if sys.argv[1] == "normalize":
         if len(sys.argv) > 4:
-            proc_num = int(sys.argv[3])
-            total_num = int(sys.argv[4])
+            proc_num = int(sys.argv[2])
+            total_num = int(sys.argv[3])
             for dataset in datasets:
                 print(f"Normalizing: {dataset}")
                 dataset.generate_normalized_txt_files(datasets_config.prepared_data_path, proc_num, total_num)
