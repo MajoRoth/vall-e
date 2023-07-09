@@ -160,7 +160,7 @@ class Dataset:
                             )
                             txt_file.close()
 
-                if len(row) == 2:
+                elif len(row) == 2:
                     path, text = row
                     file_name = self.get_file_name(path, idx=0, suffix="normalized.txt")
                     with open(os.path.join(prepared_data_path, file_name), 'w') as txt_file:
