@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=normalize
+#SBATCH --job-name=normalize_geekonomy
 #SBATCH -c4
 #SBATCH --mem=16g
 #SBATCH --time=7-0
@@ -20,5 +20,5 @@ python --version
 module load cuda/11.7
 module load cudnn
 
-python prepare_datasets.py normalize ${SLURM_ARRAY_TASK_ID} 50
+python prepare_datasets.py normalize geekonomy ${SLURM_ARRAY_TASK_ID} 50
 
