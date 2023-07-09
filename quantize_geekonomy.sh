@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=whisper_geekonomy
+#SBATCH --job-name=quantize_geekonomy
 #SBATCH -c4
 #SBATCH --mem=16g
 #SBATCH --time=7-0

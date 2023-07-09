@@ -85,7 +85,7 @@ def main():
                 output_path = f"{yaml_cfg.output_path}/{wav_name}"
 
                 main_test(text=sentence,
-                          reference=yaml_cfg.reference_path_hayot,
+                          reference=ref,
                           out_path=output_path,
                           ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/hebrew/ar.pt",
                           nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/hebrew/nar.pt",
