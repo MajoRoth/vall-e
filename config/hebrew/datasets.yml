@@ -3,7 +3,7 @@ datasets:
   -
     name: "hayot-kis-gold"
     wav_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/wavs_24k/"
-    metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/metadata.csv"
+    metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/"
     labeled: True
     length: 0
   -
