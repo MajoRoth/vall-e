@@ -104,8 +104,9 @@ class Dataset:
 
     def generate_qnt_files_unlabled(self, prepared_data_path: str, process_number=1, total_process_number=1):
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
+        process_split = np.array_split(np.array(metadata_paths), total_process_number)[process_number - 1]
 
-        for metadata_path in metadata_paths:
+        for metadata_path in process_split:
             print(f"generating qnt for {metadata_path}")
             data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
 
@@ -228,12 +229,17 @@ if __name__ == "__main__":
                     dataset.create_metadata_csv()
 
     if sys.argv[1] == "quantize":
+        data_base_name = sys.argv[2]
+        print(f"Quantizing {data_base_name}")
+
         for dataset in datasets:
-            if dataset.name == "osim-history":
-                print(f"Quantizing: {dataset}")
-                proc_num = int(sys.argv[3])
-                total_num = int(sys.argv[4])
-                dataset.generate_qnt_files(datasets_config.prepared_data_path, proc_num, total_num)
+            if dataset.name == data_base_name:
+                if len(sys.argv) > 4:
+                    proc_num = int(sys.argv[3])
+                    total_num = int(sys.argv[4])
+                    dataset.generate_qnt_files(datasets_config.prepared_data_path, proc_num, total_num)
+                else:
+                    dataset.generate_qnt_files(datasets_config.prepared_data_path)
 
     if sys.argv[1] == "normalize":
         for dataset in datasets:
