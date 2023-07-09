@@ -142,10 +142,11 @@ class Dataset:
                     raise Exception(f"dataset is not in correct format")
 
 
-    def generate_normalized_txt_files(self, prepared_data_path: str):
+    def generate_normalized_txt_files(self, prepared_data_path: str, process_number=1, total_process_number=1):
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
+        process_split = np.array_split(np.array(metadata_paths), total_process_number)[process_number - 1]
 
-        for metadata_path in metadata_paths:
+        for metadata_path in process_split:
             print(f"generating txt for {metadata_path}")
 
             data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
@@ -245,9 +246,18 @@ if __name__ == "__main__":
                     dataset.generate_qnt_files(datasets_config.prepared_data_path)
 
     if sys.argv[1] == "normalize":
-        for dataset in datasets:
-            print(f"Normalizing: {dataset}")
-            dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+        if len(sys.argv) > 4:
+            proc_num = int(sys.argv[3])
+            total_num = int(sys.argv[4])
+            for dataset in datasets:
+                print(f"Normalizing: {dataset}")
+                dataset.generate_normalized_txt_files(datasets_config.prepared_data_path, proc_num, total_num)
+
+        else:
+            for dataset in datasets:
+                print(f"Normalizing: {dataset}")
+                dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+
 
     if sys.argv[1] == "phoneme":
         generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters())
