@@ -247,6 +247,39 @@ class Dataset:
                 else:
                     raise Exception(f"dataset is not in correct format")
 
+        def generate_phoneme_files(prepared_data_path, tokenizer):
+            print(f"generating phoneme files")
+
+            paths = list(Path(prepared_data_path).rglob(f"*.normalized.txt"))
+
+            for path in tqdm(paths):
+                phone_path = path.with_suffix(".phn.txt")
+                if phone_path.exists():
+                    print("Error: phn path already exists")
+                    continue
+
+                graphs = _get_graphs(path)
+                phones = tokenizer.tokenize(graphs)
+                with open(phone_path, "w") as f:
+                    f.write(" ".join(phones))
+
+
+    def generate_phoneme_files(self, tokenizer):
+        print(f"generating phoneme files")
+
+        paths = list(Path(self.prepared_data_path).rglob(f"*.normalized.txt"))
+
+        for path in tqdm(paths):
+            phone_path = path.with_suffix(".phn.txt")
+            if phone_path.exists():
+                print("Error: phn path already exists")
+                continue
+
+            graphs = _get_graphs(path)
+            phones = tokenizer.tokenize(graphs)
+            with open(phone_path, "w") as f:
+                f.write(" ".join(phones))
+
 
     def convert_path_to_name_drop_suffix(self, path):
         path = Path(path)
@@ -269,21 +302,7 @@ class Dataset:
         return self.__str__()
 
 
-def generate_phoneme_files(prepared_data_path, tokenizer):
-    print(f"generating phoneme files")
 
-    paths = list(Path(prepared_data_path).rglob(f"*.normalized.txt"))
-
-    for path in tqdm(paths):
-        phone_path = path.with_suffix(".phn.txt")
-        if phone_path.exists():
-            print("Error: phn path already exists")
-            continue
-
-        graphs = _get_graphs(path)
-        phones = tokenizer.tokenize(graphs)
-        with open(phone_path, "w") as f:
-            f.write(" ".join(phones))
 
 
 
@@ -332,10 +351,13 @@ if __name__ == "__main__":
                 else:
                     dataset.generate_normalized_txt_files()
 
-
-
     if sys.argv[1] == "phoneme":
-        generate_phoneme_files(datasets_config.prepared_data_path, TokenizeByLetters())
+        data_base_name = sys.argv[2]
+        print(f"Normalizing {data_base_name}")
+
+        for dataset in datasets:
+            if dataset.name == data_base_name:
+                dataset.generate_phoneme_files(TokenizeByLetters())
 
 
     # for dataset in datasets:
