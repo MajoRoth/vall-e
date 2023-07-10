@@ -214,9 +214,10 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
 
 
 if __name__ == "__main__":
-    directory = r"/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
+    directory = r"/cs/dataset/Download/adiyoss/libriTTS/LibriTTS/dev-clean"
     sub_dirs = [x[0] for x in os.walk(directory)]
     print(sub_dirs)
+    print(len(sub_dirs))
 
 
 
