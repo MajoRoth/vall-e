@@ -3,7 +3,7 @@
 #SBATCH -c4
 #SBATCH --mem=16g
 #SBATCH --time=7-0
-#SBATCH --gres=gpu:1,vmem:10g
+#SBATCH --gres=gpu:1,vmem:8g
 #SBATCH --exclude=gsm-04
 #SBATCH --array=1-50
 #SBATCH --output=/cs/labs/adiyoss/amitroth/vall-e/slurm_outputs/%A_%a_%x.out
