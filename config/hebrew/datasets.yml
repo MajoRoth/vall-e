@@ -8,8 +8,9 @@ datasets:
     length: 0
   -
     name: "osim-history"
-    wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
-    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history_metadata/"
+    prepared_data_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history-prepared"
+    original_wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
+    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history-prepared/metadata/"
     labeled: False
     length: 250  # Hours
   -

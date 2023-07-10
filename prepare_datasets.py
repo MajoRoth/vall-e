@@ -214,6 +214,14 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
 
 
 if __name__ == "__main__":
+    directory = r"/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
+    sub_dirs = [x[0] for x in os.walk(directory)]
+    print(sub_dirs)
+
+
+
+
+
     print(f"parameters: {str(sys.argv)}")
     datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets.yml")
     # datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets_debug.yml")
