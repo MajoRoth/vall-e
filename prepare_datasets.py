@@ -87,9 +87,7 @@ class Dataset:
             for audio_path in audio_paths:
                 result = model.transcribe(str(audio_path), language='Hebrew')
                 segments = result["segments"]
-                audio_name = audio_path.name
                 print(audio_path)
-                print(audio_name)
 
                 for segment in segments:
                     text = segment['text']
@@ -97,8 +95,8 @@ class Dataset:
                     end_time = segment['end']
                     index = segment['id']
 
-                    print(f"Transcribed: {audio_name}, {index}, {start_time}, {end_time}, {text}")
-                    writer.writerow([audio_name, index, start_time, end_time, text])
+                    print(f"Transcribed: {str(audio_path)}, {index}, {start_time}, {end_time}, {text}")
+                    writer.writerow([str(audio_path), index, start_time, end_time, text])
 
                 length += end_time
 
