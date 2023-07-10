@@ -131,57 +131,67 @@ class Dataset:
 
 
 
-    def generate_qnt_files(self, prepared_data_path: str, process_number=1, total_process_number=1):
+    def generate_qnt_files(self, process_number=1, total_process_number=1):
         if dataset.labeled:
-            self.generate_qnt_files_labled(prepared_data_path, process_number, total_process_number)
+            self.generate_qnt_files_labled(process_number, total_process_number)
         else:
-            self.generate_qnt_files_unlabled(prepared_data_path, process_number, total_process_number)
+            self.generate_qnt_files_unlabled(process_number, total_process_number)
 
-    def generate_qnt_files_labled(self, prepared_data_path: str, process_number=1, total_process_number=1):
-        paths = list(Path(self.wav_path).rglob(f"*.wav"))
+    def generate_qnt_files_labled(self, process_number=1, total_process_number=1):
+        paths = sorted(Path(self.wav_path).rglob(f"*.wav"))
+        process_split = np.array_split(np.array(paths), total_process_number)[process_number - 1]
 
-        for path in tqdm(paths):
-            file_name = self.get_file_name(path, idx=0, suffix="qnt.pt")
-            out_path = Path(os.path.join(prepared_data_path, file_name))
-            if out_path.exists():
-                print("Error: qnt path already exists")
+        for path in tqdm(process_split):
+            file_name = Path(path).with_suffix(".qnt.pt").name
+            qnt_path = (self.prepared_data_path / file_name).with_suffix(".qnt.pt")
+            if qnt_path.exists():
+                print(f"Error: qnt path: {qnt_path} already exists")
                 continue
 
             qnt = encode_from_file(path)
-            torch.save(qnt.cpu(), out_path)
+            torch.save(qnt.cpu(), qnt_path)
 
-    def generate_qnt_files_unlabled(self, prepared_data_path: str, process_number=1, total_process_number=1):
+    def generate_qnt_files_unlabled(self, process_number=1, total_process_number=1):
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
         process_split = np.array_split(np.array(metadata_paths), total_process_number)[process_number - 1]
 
         for metadata_path in process_split:
-            print(f"generating qnt for {metadata_path}")
+            """
+                create directory
+            """
+            drop_csv_suffix = metadata_path.with_suffix("")
+            relative_folder_path = drop_csv_suffix.relative_to(self.metadata_path)
+            absolute_folder_path = Path(self.prepared_data_path) / relative_folder_path
+            absolute_folder_path.mkdir(exist_ok=True, parents=True)
+            print(absolute_folder_path)
+
+            """
+                iterate over csv
+            """
             data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
 
             for index, row in data_frame.iterrows():
-
                 if len(row) == 5:
                     """
                         we have sliced recordings
                     """
                     path, index, start_time, end_time, text = row
 
-                    file_name = self.get_file_name(path, idx=index, suffix="qnt.pt")
-                    out_path = Path(os.path.join(prepared_data_path, file_name))
-                    if out_path.exists():
-                        print("Error: qnt path already exists")
+                    name_no_suffix = Path(path).with_suffix("").name
+                    file_name = f"{name_no_suffix}@{index}"
+                    qnt_path = (absolute_folder_path / file_name).with_suffix(".qnt.pt")
+                    if qnt_path.exists():
+                        print(f"Error: qnt path: {qnt_path} already exists")
                         continue
 
-
                     torch_audio, sr = torchaudio.load(path)
-
                     start_index = int(start_time * sr)
                     end_index = int(end_time * sr)
-
                     sliced_torch = torch_audio[:, start_index:end_index]
+
                     try:
                         qnt = encode(sliced_torch, sr, 'cuda')
-                        torch.save(qnt.cpu(), out_path)
+                        torch.save(qnt.cpu(), qnt_path)
                     except Exception as e:
                         print(f"Couldnt procerss {path}, {index}, {start_time}, {end_time}, {text}")
                         print(f"due to an error {e}")
@@ -190,20 +200,34 @@ class Dataset:
                     raise Exception(f"dataset is not in correct format")
 
 
-    def generate_normalized_txt_files(self, prepared_data_path: str, process_number=1, total_process_number=1):
+    def generate_normalized_txt_files(self, process_number=1, total_process_number=1):
         metadata_paths = sorted(Path(self.metadata_path).rglob(f"*.csv"))
         process_split = np.array_split(np.array(metadata_paths), total_process_number)[process_number - 1]
 
         for metadata_path in process_split:
-            print(f"generating txt for {metadata_path}")
+            """
+                create directory
+            """
+            drop_csv_suffix = metadata_path.with_suffix("")
+            relative_folder_path = drop_csv_suffix.relative_to(self.metadata_path)
+            absolute_folder_path = Path(self.prepared_data_path) / relative_folder_path
+            absolute_folder_path.mkdir(exist_ok=True, parents=True)
+            print(absolute_folder_path)
 
+            """
+                iterate over csv
+            """
             data_frame = pd.read_csv(metadata_path, encoding="utf-8", sep='|', header=None)
 
             for index, row in tqdm(data_frame.iterrows()):
                 if len(row) == 5:
                     path, index, start_time, end_time, text = row
-                    file_name = self.get_file_name(path, idx=index, suffix="normalized.txt")
-                    with open(os.path.join(prepared_data_path, file_name), 'w') as txt_file:
+
+                    name_no_suffix = Path(path).with_suffix("").name
+                    file_name = f"{name_no_suffix}@{index}"
+                    normalized_path = (absolute_folder_path / file_name).with_suffix(".normalized.txt")
+
+                    with open(normalized_path, 'w') as txt_file:
                             txt_file.write(
                                 HebrewTextUtils.remove_nikud(text)
                             )
@@ -211,8 +235,10 @@ class Dataset:
 
                 elif len(row) == 3:
                     path, text, _ = row
-                    file_name = self.get_file_name(path, idx=0, suffix="normalized.txt")
-                    with open(os.path.join(prepared_data_path, file_name), 'w') as txt_file:
+
+                    normalized_path = (absolute_folder_path / Path(path).name).with_suffix(".normalized.txt")
+
+                    with open(normalized_path, 'w') as txt_file:
                             txt_file.write(
                                 HebrewTextUtils.remove_nikud(text)
                             )
@@ -249,7 +275,7 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
     paths = list(Path(prepared_data_path).rglob(f"*.normalized.txt"))
 
     for path in tqdm(paths):
-        phone_path = path.with_name(path.stem.split(".")[0] + ".phn.txt")
+        phone_path = path.with_suffix(".phn.txt")
         if phone_path.exists():
             print("Error: phn path already exists")
             continue
@@ -262,23 +288,9 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
 
 
 if __name__ == "__main__":
-    # directory = r"/Users/amitroth/Data/raw_data"
-    # sub_dirs = sorted([x[0] for x in os.walk(directory)])
-    # print(sub_dirs)
-    # print(len(sub_dirs))
-    #
-    # for p in sub_dirs:
-    #     paths = sorted(Path(p).glob(f"*.mp3"))
-    #     print(paths)
-    #     # process_split = np.array_split(np.array(paths), total_process_number)[process_number - 1]
-
-
-
-
-
     print(f"parameters: {str(sys.argv)}")
     datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets.yml")
-    datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets_debug.yml")
+    # datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets_debug.yml")
     datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
 
 
@@ -303,9 +315,9 @@ if __name__ == "__main__":
                 if len(sys.argv) > 4:
                     proc_num = int(sys.argv[3])
                     total_num = int(sys.argv[4])
-                    dataset.generate_qnt_files(datasets_config.prepared_data_path, proc_num, total_num)
+                    dataset.generate_qnt_files(proc_num, total_num)
                 else:
-                    dataset.generate_qnt_files(datasets_config.prepared_data_path)
+                    dataset.generate_qnt_files()
 
     if sys.argv[1] == "normalize":
         data_base_name = sys.argv[2]
@@ -316,9 +328,9 @@ if __name__ == "__main__":
                 if len(sys.argv) > 4:
                     proc_num = int(sys.argv[3])
                     total_num = int(sys.argv[4])
-                    dataset.generate_normalized_txt_files(datasets_config.prepared_data_path, proc_num, total_num)
+                    dataset.generate_normalized_txt_files(proc_num, total_num)
                 else:
-                    dataset.generate_normalized_txt_files(datasets_config.prepared_data_path)
+                    dataset.generate_normalized_txt_files()
 
 
 
