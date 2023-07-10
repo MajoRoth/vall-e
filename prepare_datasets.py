@@ -10,11 +10,9 @@ import pandas as pd
 import torch
 import torchaudio
 
-import soundfile as sf
 
 
 import omegaconf
-from pydub import AudioSegment, silence, effects
 from tqdm import tqdm
 import itertools
 
@@ -27,60 +25,112 @@ from vall_e.emb.qnt import encode_from_file, _replace_file_extension, encode
 class Dataset:
 
     def __init__(self, conf: omegaconf.DictConfig):
+        # self.name: str = conf.name
+        # self.wav_path: str = conf.wav_path
+        # self.metadata_path: str = conf.metadata_path
+        # self.labeled: str = conf.labeled
+        # self.length: bool = conf.length
+
         self.name: str = conf.name
-        self.wav_path: str = conf.wav_path
+        self.prepared_data_path: str = conf.prepared_data_path
+        self.original_wav_path: str = conf.original_wav_path
         self.metadata_path: str = conf.metadata_path
-        self.labeled: str = conf.labeled
-        self.length: bool = conf.length
+        self.labeled: bool = conf.labeled
 
 
     def create_metadata_csv(self, process_number=1, total_process_number=1):
-        print(f"Creating metadata for process {process_number} of total {total_process_number} processes")
-
-        # if os.path.isfile(self.metadata_path):
-        #     raise Exception("metadata.csv file exists, are you sure you want to overwrite it?")
-
+        print(f"Creating metadata for dataset: {self.name}\nprocess {process_number} of total {total_process_number} processes")
         if self.labeled:
             raise Exception(f"dataset is already labeled")
 
-        print(f"Creating {self.metadata_path} for {self.name}")
-
-        import whisper
-        model = whisper.load_model("large-v2")
-        metadata_file_name = os.path.join(self.metadata_path, f"metadata_{process_number}_{total_process_number}.csv")
-
-        metadata = open(metadata_file_name, mode='w')
-        writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-        length = 0
-
-        paths = sorted(Path(self.wav_path).rglob(f"*.mp3"))
-        process_split = np.array_split(np.array(paths), total_process_number)[process_number - 1]
+        """
+            splitting data for each process
+        """
+        sub_directories = sorted([x[0] for x in os.walk(self.original_wav_path)])
+        process_split = np.array_split(np.array(sub_directories), total_process_number)[process_number - 1]
         print(process_split)
 
-        for path in tqdm(process_split):
-
-            now = datetime.now()
-
-            result = model.transcribe(str(path), language='Hebrew')
-            segments = result["segments"]
-
-            for segment in segments:
-                text = segment['text']
-                start_time = segment['start']
-                end_time =segment['end']
-                index = segment['id']
-                print(f"Transcribed: {str(path)}, {index}, {start_time}, {end_time}, {text}")
-                writer.writerow([str(path), index, start_time, end_time, text])
-
-            length += end_time
-
-            print(f"Processed {str(path)} in {datetime.now() - now} seconds\ntotal recordings processed: {length / 60} minutes\n")
+        """
+            loading whisper
+        """
+        import whisper
+        model = whisper.load_model("large-v2")
 
 
-        metadata.close()
+        for directory in process_split:
+            """
+                load audio
+            """
+            audio_paths = sorted(Path(directory).glob(f"*.mp3"))
 
-        print(f"\nCreated metadata csv file for {self.name} with total length of {length} seconds\n")
+            if len(audio_paths) == 0:
+                continue
+
+            print(f"Transcribing {directory}")
+
+            """
+                create metadata csv
+            """
+            directory_relative_path = Path(directory).relative_to(self.original_wav_path)
+            absolute_path = Path(self.metadata_path) / directory_relative_path
+            csv_absolute_path = absolute_path.with_suffix(".csv")
+            csv_absolute_path.parent.mkdir(exist_ok=True, parents=True)
+            print(csv_absolute_path)
+            metadata = open(csv_absolute_path, mode='w')
+            writer = csv.writer(metadata, delimiter='|', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+            """
+                iterate over audio files
+            """
+            length = 0
+
+            for audio_path in audio_paths:
+                result = model.transcribe(str(audio_path), language='Hebrew')
+                segments = result["segments"]
+                audio_name = audio_path.name
+                print(audio_path)
+                print(audio_name)
+
+                for segment in segments:
+                    text = segment['text']
+                    start_time = segment['start']
+                    end_time = segment['end']
+                    index = segment['id']
+
+                    print(f"Transcribed: {audio_name}, {index}, {start_time}, {end_time}, {text}")
+                    writer.writerow([audio_name, index, start_time, end_time, text])
+
+                length += end_time
+
+            """
+                close metadata and write files
+            """
+            metadata.close()
+            print(f"Created metadata csv file for {directory} with total length of {length} seconds!!!\n")
+
+        print("Done")
+
+        # for path in tqdm(process_split):
+        #
+        #     now = datetime.now()
+        #
+        #     result = model.transcribe(str(path), language='Hebrew')
+        #     segments = result["segments"]
+        #
+        #     for segment in segments:
+        #         text = segment['text']
+        #         start_time = segment['start']
+        #         end_time =segment['end']
+        #         index = segment['id']
+        #         print(f"Transcribed: {str(path)}, {index}, {start_time}, {end_time}, {text}")
+        #         writer.writerow([str(path), index, start_time, end_time, text])
+        #
+        #     length += end_time
+        #
+        #     print(f"Processed {str(path)} in {datetime.now() - now} seconds\ntotal recordings processed: {length / 60} minutes\n")
+
+
+
 
 
     def generate_qnt_files(self, prepared_data_path: str, process_number=1, total_process_number=1):
@@ -214,10 +264,15 @@ def generate_phoneme_files(prepared_data_path, tokenizer):
 
 
 if __name__ == "__main__":
-    directory = r"/cs/dataset/Download/adiyoss/libriTTS/LibriTTS/dev-clean"
-    sub_dirs = [x[0] for x in os.walk(directory)]
-    print(sub_dirs)
-    print(len(sub_dirs))
+    # directory = r"/Users/amitroth/Data/raw_data"
+    # sub_dirs = sorted([x[0] for x in os.walk(directory)])
+    # print(sub_dirs)
+    # print(len(sub_dirs))
+    #
+    # for p in sub_dirs:
+    #     paths = sorted(Path(p).glob(f"*.mp3"))
+    #     print(paths)
+    #     # process_split = np.array_split(np.array(paths), total_process_number)[process_number - 1]
 
 
 
@@ -225,14 +280,12 @@ if __name__ == "__main__":
 
     print(f"parameters: {str(sys.argv)}")
     datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets.yml")
-    # datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets_debug.yml")
-
+    datasets_config = omegaconf.OmegaConf.load("config/hebrew/datasets_debug.yml")
     datasets = [Dataset(ds_conf) for ds_conf in datasets_config.datasets]
 
 
     if sys.argv[1] == "transcribe":
         data_base_name = sys.argv[2]
-        print(f"Transcribing {data_base_name}")
 
         for dataset in datasets:
             if dataset.name == data_base_name:

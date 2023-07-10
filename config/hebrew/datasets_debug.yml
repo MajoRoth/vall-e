@@ -1,16 +1,18 @@
 prepared_data_path: "/cs/dataset/Download/adiyoss/heb_data/prepared_valle_data"
 datasets:
   -
-    name: "test1"
-    wav_path: "/cs/dataset/Download/adiyoss/heb_data/test/first_podcast"
-    metadata_path: "//cs/dataset/Download/adiyoss/heb_data/test/first_podcast_metadata/"
+    name: "test"
+    prepared_data_path: "/Users/amitroth/Data/prepared_data"
+    original_wav_path: "/Users/amitroth/Data/raw_data"
+    metadata_path: "/Users/amitroth/Data/prepared_data/metadata/"
     labeled: False
-    length: 0
+    length: 250  # Hours
   -
-    name: "test2"
-    wav_path: "/cs/dataset/Download/adiyoss/heb_data/test/second_podcast"
-    metadata_path: "//cs/dataset/Download/adiyoss/heb_data/test/second_podcast_metadata/"
+    name: "osim-history"
+    prepared_data_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history-prepared"
+    original_wav_path: "/cs/dataset/Download/adiyoss/podcasts/parsed_data/osim-history/"
+    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/osim-history-prepared/metadata/"
     labeled: False
-    length: 0
+    length: 250  # Hours
 
 
