@@ -4,7 +4,7 @@ datasets:
     name: "hayot-kis-gold"
     prepared_data_path: "/cs/dataset/Download/adiyoss/heb_data/hayot-kis-gold-prepared/valle/"
     original_wav_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/wavs_24k/"
-    metadata_path: "/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/metadata.csv"
+    metadata_path: "/cs/dataset/Download/adiyoss/heb_data/hayot-kis-gold-prepared/metadata/"
     labeled: True
     length: 0
   -
