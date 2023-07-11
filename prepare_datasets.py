@@ -264,13 +264,14 @@ class Dataset:
                     f.write(" ".join(phones))
 
 
-    def generate_phoneme_files(self, tokenizer):
+    def generate_phoneme_files(self, tokenizer, process_number=1, total_process_number=1):
         print(f"generating phoneme files")
 
-        paths = list(Path(self.prepared_data_path).rglob(f"*.normalized.txt"))
+        paths = sorted(Path(self.prepared_data_path).rglob(f"*.normalized.txt"))
+        process_split = np.array_split(np.array(paths), total_process_number)[process_number - 1]
 
-        for path in tqdm(paths):
-            phone_path = path.with_suffix(".phn.txt")
+        for path in tqdm(process_split):
+            phone_path = path.with_name(path.stem.split(".")[0] + ".phn.txt")
             if phone_path.exists():
                 print("Error: phn path already exists")
                 continue
@@ -357,7 +358,12 @@ if __name__ == "__main__":
 
         for dataset in datasets:
             if dataset.name == data_base_name:
-                dataset.generate_phoneme_files(TokenizeByLetters())
+                if len(sys.argv) > 4:
+                    proc_num = int(sys.argv[3])
+                    total_num = int(sys.argv[4])
+                    dataset.generate_phoneme_files(TokenizeByLetters(), proc_num, total_num)
+                else:
+                    dataset.generate_phoneme_files(TokenizeByLetters())
 
 
     # for dataset in datasets:
