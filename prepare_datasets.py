@@ -365,6 +365,23 @@ if __name__ == "__main__":
                 else:
                     dataset.generate_phoneme_files(TokenizeByLetters())
 
+    if sys.argv[1] == "clean":
+        data_base_name = sys.argv[2]
+        print(f"Normalizing {data_base_name}")
+
+        if dataset.name == data_base_name:
+            print("cleaning")
+            paths = sorted(Path(dataset.prepared_data_path).rglob(f"*.normalized.phn.txt"))
+
+            for path in tqdm(paths):
+                os.remove(str(path))
+
+            print("Done")
+
+
+
+
+
 
     # for dataset in datasets:
     #     for i in range(3):
