@@ -138,12 +138,13 @@ class Dataset:
             self.generate_qnt_files_unlabled(process_number, total_process_number)
 
     def generate_qnt_files_labled(self, process_number=1, total_process_number=1):
-        paths = sorted(Path(self.wav_path).rglob(f"*.wav"))
+        paths = sorted(Path(self.original_wav_path).rglob(f"*.wav"))
         process_split = np.array_split(np.array(paths), total_process_number)[process_number - 1]
 
         for path in tqdm(process_split):
             file_name = Path(path).with_suffix(".qnt.pt").name
-            qnt_path = (self.prepared_data_path / file_name).with_suffix(".qnt.pt")
+            qnt_path = (self.prepared_data_path / Path(file_name))
+
             if qnt_path.exists():
                 print(f"Error: qnt path: {qnt_path} already exists")
                 continue
