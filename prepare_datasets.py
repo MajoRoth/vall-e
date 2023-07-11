@@ -368,15 +368,15 @@ if __name__ == "__main__":
     if sys.argv[1] == "clean":
         data_base_name = sys.argv[2]
         print(f"Normalizing {data_base_name}")
+        for dataset in datasets:
+            if dataset.name == data_base_name:
+                print("cleaning")
+                paths = sorted(Path(dataset.prepared_data_path).rglob(f"*.normalized.phn.txt"))
 
-        if dataset.name == data_base_name:
-            print("cleaning")
-            paths = sorted(Path(dataset.prepared_data_path).rglob(f"*.normalized.phn.txt"))
+                for path in tqdm(paths):
+                    os.remove(str(path))
 
-            for path in tqdm(paths):
-                os.remove(str(path))
-
-            print("Done")
+                print("Done")
 
 
 
