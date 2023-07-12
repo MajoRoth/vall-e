@@ -46,6 +46,8 @@ class ValidCache:
 
                     continue
 
+        print(self.loaded_data)
+
         print(f"loaded cache in {time.time() - now} seconds")
 
     def write_cached(self, file_path: str, value: bool):
