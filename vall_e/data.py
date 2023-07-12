@@ -58,7 +58,7 @@ class ValidCache:
             txt.write(f"{str(file_path)}|{val_to_write}\n")
 
     def validate(self, path, min_phones, max_phones):
-        if str(path) in self.loaded_data:
+        if str(path) in self.loaded_data.keys():
             print("using cache")
             return self.loaded_data[str(path)]
         else:
