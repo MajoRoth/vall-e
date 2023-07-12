@@ -223,8 +223,10 @@ def _load_train_val_paths():
 
     if len(paths) == 0:
         raise RuntimeError(f"Failed to find any .qnt.pt file in {cfg.data_dirs}.")
-
+    print("SORTING")
     pairs = sorted([(cfg.get_spkr(p), p) for p in paths])
+    print("DONE SORTING")
+
     del paths
 
     for _, group in groupby(pairs, lambda pair: pair[0]):
@@ -266,6 +268,7 @@ def create_datasets():
 
 
 def create_train_val_dataloader():
+    print("STARTING LOADING DATASET")
     train_dataset, val_dataset = create_datasets()
     print("CREATED DATASET")
     train_dl = _create_dataloader(train_dataset, training=True)

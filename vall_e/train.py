@@ -31,7 +31,7 @@ def load_engines():
 def main():
     print("ENTERED MAIN")
     setup_logging(cfg.log_dir)
-
+    print("SETUP LOGGING")
     train_dl, subtrain_dl, val_dl = create_train_val_dataloader()
     print("LOADED DATA")
 
