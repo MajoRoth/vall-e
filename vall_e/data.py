@@ -16,9 +16,75 @@ import time
 from .config import cfg
 from .sampler import Sampler
 
+"""
+    MY CLASS
+"""
+class ValidCache:
+    """
+    format is a .txt file:
+    path|0
+    path|1
+    0 stands for invalid
+    1 for valid
+    """
+
+    def __init__(self, path):
+        self.path = path
+        self.loaded_data = dict()
+
+        # load cache
+        now = time.time()
+        print("Loading cache")
+        with open(self.path, "r") as txt:
+            for line in txt:
+                try:
+                    file_path, valid = line.split("|")
+                    self.loaded_data[str(file_path)] = [False, True][valid]
+
+                except Exception as e:
+                    print("Invalid cache line format")
+                    continue
+
+        print(f"loaded cache in {time.time() - now} seconds")
+
+    def write_cached(self, file_path: str, value: bool):
+        self.loaded_data[str(file_path)] = value
+
+        with open(self.path, "w") as txt:
+            val_to_write = 1 if value else 0
+            txt.write(f"{str(file_path)}|{val_to_write}")
+
+    def validate(self, path, min_phones, max_phones):
+        if str(path) in self.loaded_data:
+            print("using cache")
+            return self.loaded_data[str(path)]
+        else:
+            print("calculating and saving")
+            result = ValidCache._validate(path, min_phones, max_phones)
+            self.write_cached(str(path), result)
+            return result
+
+
+
+    @staticmethod
+    def _validate(path, min_phones, max_phones):
+        phones = _get_phones(path)
+        unique_phones = list(set(phones))
+        if len(unique_phones) == 0:
+            return False
+        if len(unique_phones) == 1 and unique_phones[0] == "_":
+            return False
+        if len(phones) < min_phones:
+            return False
+        if len(phones) > max_phones:
+            return False
+        return True
+
+
 torch.multiprocessing.set_sharing_strategy("file_system")
 
 _logger = logging.getLogger(__name__)
+_valid_cache = ValidCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache.txt")
 
 
 def _replace_file_extension(path, suffix):
@@ -59,19 +125,13 @@ def _interleaved_reorder(l, fn):
                 yield value
 
 
+
+
+
+
 @cache
 def _validate(path, min_phones, max_phones):
-    phones = _get_phones(path)
-    unique_phones = list(set(phones))
-    if len(unique_phones) == 0:
-        return False
-    if len(unique_phones) == 1 and unique_phones[0] == "_":
-        return False
-    if len(phones) < min_phones:
-        return False
-    if len(phones) > max_phones:
-        return False
-    return True
+    return _valid_cache.validate(path, min_phones, max_phones)
 
 
 class VALLEDatset(Dataset):
@@ -90,11 +150,11 @@ class VALLEDatset(Dataset):
         self.min_phones = min_phones
         self.max_phones = max_phones
         _logger.critical("Validating")
-
+        now = time.time()
         self.paths = [
             path for path in paths if _validate(path, self.min_phones, self.max_phones)
         ]
-        _logger.critical("Creating phonemenes")
+        _logger.critical(f"Validated data in {time.time() - now}")
         self.spkr_symmap = spkr_symmap or self._get_spkr_symmap()
         self.phone_symmap = phone_symmap or self._get_phone_symmap()
         self.training = training
@@ -252,10 +312,14 @@ def _load_train_val_paths():
 def create_datasets():
     train_paths, val_paths = _load_train_val_paths()
 
+    now = time.time()
     train_dataset = VALLEDatset(
         train_paths,
         training=True,
     )
+    _logger.info(f"Created train data set in {time.time() - now}")
+    now = time.time()
+
 
     val_dataset = VALLEDatset(
         val_paths,
@@ -263,6 +327,8 @@ def create_datasets():
         train_dataset.spkr_symmap,
         extra_paths_by_spkr_name=train_dataset.paths_by_spkr_name,
     )
+    _logger.info(f"Created train data set in {time.time() - now}")
+
 
     val_dataset.interleaved_reorder_(cfg.get_spkr)
     val_dataset.head_(cfg.max_num_val)
