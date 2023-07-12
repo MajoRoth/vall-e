@@ -50,7 +50,7 @@ class ValidCache:
     def write_cached(self, file_path: str, value: bool):
         self.loaded_data[str(file_path)] = value
 
-        with open(self.path, "w") as txt:
+        with open(self.path, "a+") as txt:
             val_to_write = 1 if value else 0
             txt.write(f"{str(file_path)}|{val_to_write}\n")
 
