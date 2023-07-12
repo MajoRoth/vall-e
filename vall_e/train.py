@@ -29,9 +29,11 @@ def load_engines():
 
 
 def main():
+    print("ENTERED MAIN")
     setup_logging(cfg.log_dir)
 
     train_dl, subtrain_dl, val_dl = create_train_val_dataloader()
+    print("LOADED DATA")
 
     def train_feeder(engines, batch, name):
         model = engines["model"]
