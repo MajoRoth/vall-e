@@ -76,7 +76,7 @@ class ValidCache:
 torch.multiprocessing.set_sharing_strategy("file_system")
 
 _logger = logging.getLogger(__name__)
-_valid_cache = ValidCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache.txt")
+_valid_cache = ValidCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache.pickle")
 
 
 def _replace_file_extension(path, suffix):
