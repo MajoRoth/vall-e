@@ -35,9 +35,8 @@ class ValidCache:
         if path is None:
             self.loaded_data = dict()
         else:
-            self.loaded_data = dict()
-            # with open(self.path, 'rb') as handle:
-            #     self.loaded_data = pickle.load(handle)
+            with open(self.path, 'rb') as handle:
+                self.loaded_data = pickle.load(handle)
         if type(self.loaded_data) is not dict:
             self.loaded_data = dict()
 
