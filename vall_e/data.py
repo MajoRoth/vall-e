@@ -264,9 +264,12 @@ def create_datasets():
 
 def create_train_val_dataloader():
     train_dataset, val_dataset = create_datasets()
-
+    print("CREATED DATASET")
     train_dl = _create_dataloader(train_dataset, training=True)
+    print("CREATED DATA LOADER")
     val_dl = _create_dataloader(val_dataset, training=False)
+    print("CREATED DATA LOADER")
+
 
     _logger.info(str(train_dataset.phone_symmap))
     _logger.info(str(train_dataset.spkr_symmap))
