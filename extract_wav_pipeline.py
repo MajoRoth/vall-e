@@ -23,7 +23,7 @@ def main():
     new_ar_ckpt = False
     latest_nar = None
     new_nar_ckpt = False
-
+    print("Starting To Extract")
     while True:
         if os.path.isfile(yaml_cfg.latest_ar_path):  # Check for new ar ckpt
             f = open(yaml_cfg.latest_ar_path, 'r')
@@ -32,7 +32,7 @@ def main():
             if latest_ar_current_value != latest_ar:
                 os.system(f"python -m vall_e.export {yaml_cfg.ar_ckpt_path} yaml=config/hebrew/ar.yml")
                 print(" ")
-                print(f"EXPORTED AR {latest_ar_current_value}")
+                print(f"--- EXPORTED AR {latest_ar_current_value}")
                 print(" ")
 
                 latest_ar = latest_ar_current_value
@@ -51,7 +51,7 @@ def main():
             if latest_nar_current_value != latest_nar:
                 os.system(f"python -m vall_e.export {yaml_cfg.nar_ckpt_path} yaml=config/hebrew/nar.yml")
                 print(" ")
-                print(f"EXPORTED NAR {latest_nar_current_value}")
+                print(f"--- EXPORTED NAR {latest_nar_current_value}")
                 print(" ")
 
                 latest_nar = latest_nar_current_value

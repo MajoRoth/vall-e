@@ -35,7 +35,7 @@ class Config(ConfigBase):
     max_iter: int = 1_000_000
     gradient_clipping: float = 100
     eval_every: int = 2_000
-    save_ckpt_every: int = 2_000
+    save_ckpt_every: int = 1_000
 
     model: str = "ar-quarter"
     spkr_name_getter: str = "lambda p: p.parts[-2]"
