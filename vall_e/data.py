@@ -39,10 +39,11 @@ class ValidCache:
             for line in txt:
                 try:
                     file_path, valid = line.split("|")
-                    self.loaded_data[str(file_path)] = [False, True][valid]
+                    self.loaded_data[str(file_path)] = [False, True][int(valid[0])]
 
                 except Exception as e:
-                    print("Invalid cache line format")
+                    print(f"Invalid cache line format - {e}")
+
                     continue
 
         print(f"loaded cache in {time.time() - now} seconds")
