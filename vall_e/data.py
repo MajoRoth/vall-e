@@ -122,7 +122,10 @@ class VALLEDatset(Dataset):
 
     @cached_property
     def phones(self):
-        return sorted(set().union(*[_get_phones(path) for path in self.paths]))
+        _logger.info(str("CALCULATING PHONEMES"))
+        val = sorted(set().union(*[_get_phones(path) for path in self.paths]))
+        _logger.info(str("DONE CALCULATING PHONEMES"))
+        return val
 
     def _get_phone_symmap(self):
         # Note that we use phone symmap starting from 1 so that we can safely pad 0.
@@ -233,8 +236,11 @@ def _load_train_val_paths():
 
     now = time.time()
     print("SORTING")
+    _logger.info(str("sorting"))
     pairs = sorted([(cfg.get_spkr(p), p) for p in paths])
     print("DONE SORTING")
+    _logger.info(str("done sorting"))
+
     print(f"Took {time.time() - now}")
 
     del paths
@@ -256,11 +262,15 @@ def _load_train_val_paths():
 def create_datasets():
     train_paths, val_paths = _load_train_val_paths()
     print("Created valle paths")
+    _logger.info(str("Created valle paths"))
+
     train_dataset = VALLEDatset(
         train_paths,
         training=True,
     )
     print("Created valle dataset")
+    _logger.info(str("Created valle paths"))
+
 
     val_dataset = VALLEDatset(
         val_paths,
@@ -269,6 +279,8 @@ def create_datasets():
         extra_paths_by_spkr_name=train_dataset.paths_by_spkr_name,
     )
     print("Created valle dataset")
+    _logger.info(str("Created valle paths"))
+
 
 
     val_dataset.interleaved_reorder_(cfg.get_spkr)
@@ -279,12 +291,18 @@ def create_datasets():
 
 def create_train_val_dataloader():
     print("STARTING LOADING DATASET")
+    _logger.info(str("STARTING LOADING DATASET"))
+
     train_dataset, val_dataset = create_datasets()
     print("CREATED DATASET")
+    _logger.info(str("CREATING DATASET"))
     train_dl = _create_dataloader(train_dataset, training=True)
     print("CREATED DATA LOADER")
+    _logger.info(str("CREATED DATA LOADER"))
     val_dl = _create_dataloader(val_dataset, training=False)
     print("CREATED DATA LOADER")
+    _logger.info(str("CREATED DATA LOADER"))
+
 
 
     _logger.info(str(train_dataset.phone_symmap))
