@@ -87,14 +87,16 @@ class VALLEDatset(Dataset):
         self._head = None
         self.min_phones = min_phones
         self.max_phones = max_phones
+        _logger.critical("Validating")
 
         self.paths = [
             path for path in paths if _validate(path, self.min_phones, self.max_phones)
         ]
-
+        _logger.critical("Creating phonemenes")
         self.spkr_symmap = spkr_symmap or self._get_spkr_symmap()
         self.phone_symmap = phone_symmap or self._get_phone_symmap()
         self.training = training
+        _logger.critical("done")
 
         self.paths_by_spkr_name = self._get_paths_by_spkr_name(extra_paths_by_spkr_name)
 
@@ -224,13 +226,10 @@ def _load_train_val_paths():
     for data_dir in cfg.data_dirs:
         paths.extend(tqdm(data_dir.rglob("*.qnt.pt")))
 
-    _logger.critical("extended dataset")
-
     if len(paths) == 0:
         raise RuntimeError(f"Failed to find any .qnt.pt file in {cfg.data_dirs}.")
 
     pairs = sorted([(cfg.get_spkr(p), p) for p in paths])
-    _logger.critical("sorted dataset")
 
     del paths
 
@@ -250,7 +249,7 @@ def _load_train_val_paths():
 @cfg.diskcache()
 def create_datasets():
     train_paths, val_paths = _load_train_val_paths()
-    _logger.critical("creating dataset")
+
     train_dataset = VALLEDatset(
         train_paths,
         training=True,
