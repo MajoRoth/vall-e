@@ -6,7 +6,8 @@
 #SBATCH --gres=gpu:1,vmem:24g
 #SBATCH --exclude=gsm-04
 #SBATCH --output=/cs/labs/adiyoss/amitroth/vall-e/slurm_outputs/%x_%A.out
-
+#SBATCH --mail-user=amit.roth@mail.huji.ac.il
+#SBATCH --mail-type=ALL
 
 dir=/cs/labs/adiyoss/amitroth/vall-e
 cd $dir

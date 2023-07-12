@@ -42,6 +42,7 @@ def _get_phones(path):
     path = _replace_file_extension(path, ".phn.txt")
     with open(path, "r", encoding="utf8") as f:
         content = f.read()
+    print("read")
     return ["<s>"] + content.split() + ["</s>"]
 
 
