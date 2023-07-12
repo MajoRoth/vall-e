@@ -38,6 +38,8 @@ class ValidCache:
 
             with open(self.path, 'rb') as handle:
                 self.loaded_data = pickle.load(handle)
+        if type(self.loaded_data) is not dict:
+            self.loaded_data = dict()
 
         print(self.loaded_data)
 
