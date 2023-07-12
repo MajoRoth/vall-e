@@ -221,7 +221,6 @@ def _load_train_val_paths():
     train_paths = []
     val_paths = []
 
-    now = time.time()
     for data_dir in cfg.data_dirs:
         paths.extend(tqdm(data_dir.rglob("*.qnt.pt")))
 
