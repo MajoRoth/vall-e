@@ -1,5 +1,6 @@
 import copy
 import logging
+import pickle
 import random
 from collections import defaultdict
 from functools import cache, cached_property
@@ -30,32 +31,20 @@ class ValidCache:
 
     def __init__(self, path):
         self.path = path
-        self.loaded_data = dict()
 
-        # load cache
-        now = time.time()
-        print("Loading cache")
-        with open(self.path, "r") as txt:
-            for line in txt:
-                try:
-                    file_path, valid = line.split("|")
-                    self.loaded_data[str(file_path)] = [False, True][int(valid[0])]
+        if path is None:
+            self.loaded_data = dict()
+        else:
 
-                except Exception as e:
-                    print(f"Invalid cache line format - {e}")
-
-                    continue
+            with open(self.path, 'rb') as handle:
+                self.loaded_data = pickle.load(handle)
 
         print(self.loaded_data)
 
-        print(f"loaded cache in {time.time() - now} seconds")
-
     def write_cached(self, file_path: str, value: bool):
         self.loaded_data[str(file_path)] = value
-
-        with open(self.path, "a+") as txt:
-            val_to_write = 1 if value else 0
-            txt.write(f"{str(file_path)}|{val_to_write}\n")
+        with open(self.path, 'wb') as handle:
+            pickle.dump(self.loaded_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def validate(self, path, min_phones, max_phones):
         if str(path) in self.loaded_data.keys():
