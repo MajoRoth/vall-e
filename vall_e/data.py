@@ -121,6 +121,7 @@ class VALLEDatset(Dataset):
 
     @cached_property
     def phones(self):
+        _logger.critical("--- CALCULATING PHONES --")
         val = sorted(set().union(*[_get_phones(path) for path in self.paths]))
         return val
 
