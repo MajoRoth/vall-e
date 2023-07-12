@@ -219,6 +219,7 @@ def _load_train_val_paths():
     val_paths = []
 
     for data_dir in cfg.data_dirs:
+        print(f"Processing {data_dir}")
         paths.extend(tqdm(data_dir.rglob("*.qnt.pt")))
 
     if len(paths) == 0:
