@@ -2,9 +2,11 @@
 #SBATCH --job-name=train_ar
 #SBATCH -c 16
 #SBATCH --mem=32g
-#SBATCH --time=3-0
+#SBATCH --time=5-0
 #SBATCH --gres=gpu:1,vmem:24g
 #SBATCH --exclude=gsm-04
+#SBATCH --output=/cs/labs/adiyoss/amitroth/vall-e/slurm_outputs/%x_%A.out
+
 
 dir=/cs/labs/adiyoss/amitroth/vall-e
 cd $dir
