@@ -116,8 +116,8 @@ def upload_wav(writer, cfg):
         main_test(text=sentence,
                   reference=ref,
                   out_path=output_path,
-                  ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/hebrew/ar.pt",
-                  nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/hebrew/nar.pt",
+                  ar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/ar.pt",
+                  nar_ckpt="/cs/labs/adiyoss/amitroth/vall-e/zoo/nar.pt",
                   device="cuda")
 
         print(f"CREATED WAV test_{file_name_without_wav}_{ckpt_name}")
