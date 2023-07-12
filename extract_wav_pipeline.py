@@ -103,7 +103,7 @@ def ckpt_pipeline(writer, cfg):
 
 
 def upload_wav(writer, cfg):
-    sentence = "היי, זה משפט לדוגמא כדי שאני אשמע אם המודל מדבר טוב"
+    sentence = "משפט קצר"
 
     ckpt_name = "test"
 
