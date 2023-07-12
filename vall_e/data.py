@@ -11,6 +11,7 @@ import torch
 from torch import Tensor
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
+import time
 
 from .config import cfg
 from .sampler import Sampler
@@ -219,16 +220,22 @@ def _load_train_val_paths():
     train_paths = []
     val_paths = []
 
+    now = time.time()
     for data_dir in cfg.data_dirs:
         print(f"Processing {data_dir} - {len(paths)}")
         paths.extend(tqdm(data_dir.rglob("*.qnt.pt")))
         print(f"Done {len(paths)}")
+    print(f"Took {time.time() - now}")
+    _logger.info(str("took"))
 
     if len(paths) == 0:
         raise RuntimeError(f"Failed to find any .qnt.pt file in {cfg.data_dirs}.")
+
+    now = time.time()
     print("SORTING")
     pairs = sorted([(cfg.get_spkr(p), p) for p in paths])
     print("DONE SORTING")
+    print(f"Took {time.time() - now}")
 
     del paths
 
