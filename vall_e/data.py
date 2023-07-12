@@ -243,11 +243,12 @@ def _load_train_val_paths():
 @cfg.diskcache()
 def create_datasets():
     train_paths, val_paths = _load_train_val_paths()
-
+    print("Created valle paths")
     train_dataset = VALLEDatset(
         train_paths,
         training=True,
     )
+    print("Created valle dataset")
 
     val_dataset = VALLEDatset(
         val_paths,
@@ -255,6 +256,8 @@ def create_datasets():
         train_dataset.spkr_symmap,
         extra_paths_by_spkr_name=train_dataset.paths_by_spkr_name,
     )
+    print("Created valle dataset")
+
 
     val_dataset.interleaved_reorder_(cfg.get_spkr)
     val_dataset.head_(cfg.max_num_val)
