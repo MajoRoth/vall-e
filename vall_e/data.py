@@ -225,12 +225,13 @@ def _load_train_val_paths():
     for data_dir in cfg.data_dirs:
         paths.extend(tqdm(data_dir.rglob("*.qnt.pt")))
 
+    _logger.critical("extended dataset")
 
     if len(paths) == 0:
         raise RuntimeError(f"Failed to find any .qnt.pt file in {cfg.data_dirs}.")
 
-    now = time.time()
     pairs = sorted([(cfg.get_spkr(p), p) for p in paths])
+    _logger.critical("sorted dataset")
 
     del paths
 
@@ -250,7 +251,7 @@ def _load_train_val_paths():
 @cfg.diskcache()
 def create_datasets():
     train_paths, val_paths = _load_train_val_paths()
-
+    _logger.critical("creating dataset")
     train_dataset = VALLEDatset(
         train_paths,
         training=True,
