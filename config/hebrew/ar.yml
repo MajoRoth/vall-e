@@ -1,5 +1,4 @@
 data_dirs: [
-  /cs/dataset/Download/adiyoss/heb_data/hayot-kis-gold-prepared/valle/,
   /cs/dataset/Download/adiyoss/heb_data/osim-history-prepared/valle/
 ]
 data_root: /cs/dataset/Download/adiyoss/heb_data/
