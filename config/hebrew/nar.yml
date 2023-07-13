@@ -5,8 +5,8 @@ data_root: /cs/dataset/Download/adiyoss/heb_data/
 spkr_name_getter: "lambda p: p.parts[-3]"
 
 model: nar
-batch_size: 6
-eval_batch_size: 6
+batch_size: 4
+eval_batch_size: 4
 eval_every: 10_000
 
 sampling_temperature: 0.2
