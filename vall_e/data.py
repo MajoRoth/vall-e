@@ -1,11 +1,12 @@
 import copy
 import logging
+import os.path
 import pickle
 import random
 from collections import defaultdict
 from functools import cache, cached_property
 from itertools import groupby, zip_longest
-from typing import Any
+from typing import Any, List
 
 import numpy as np
 import torch
@@ -84,10 +85,69 @@ class ValidCache:
         return True
 
 
+class PhonesCache:
+    """
+    format is a .txt file:
+    path|0
+    path|1
+    0 stands for invalid
+    1 for valid
+    """
+
+
+    def __init__(self, path):
+        self.path = path
+        self.counter = 0
+
+        if not os.path.isfile(path):
+            self.loaded_data = dict()
+            with open(self.path, 'wb') as handle:
+                pickle.dump(self.loaded_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        else:
+            with open(self.path, 'rb') as handle:
+                self.loaded_data = pickle.load(handle)
+
+        print(self.loaded_data)
+
+    def write_cached(self, file_path: str, value: List[str]):
+        self.counter += 1
+        self.loaded_data[str(file_path)] = value
+
+        if self.counter % 1000 == 0:
+            self.backup()
+            print("--- BACK UP ---")
+
+
+    def backup(self):
+        with open(self.path, 'wb') as handle:
+            pickle.dump(self.loaded_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def get_phones(self, path, min_phones, max_phones):
+        if str(path) in self.loaded_data.keys():
+            print("phones - using cache")
+            return self.loaded_data[str(path)]
+        else:
+            print("phones - calculating and saving")
+            result = PhonesCache._get_phones(path)
+            self.write_cached(str(path), result)
+            return result
+
+    @staticmethod
+    def _get_phones(path):
+        _logger.info(str(path))
+        print(path)
+        path = _replace_file_extension(path, ".phn.txt")
+        with open(path, "r", encoding="utf8") as f:
+            content = f.read()
+        return ["<s>"] + content.split() + ["</s>"]
+
+
+
 torch.multiprocessing.set_sharing_strategy("file_system")
 
 _logger = logging.getLogger(__name__)
 _valid_cache = ValidCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache.pickle")
+_phoneme_cache = PhonesCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache_phoneme.pickle")
 
 
 def _replace_file_extension(path, suffix):
@@ -107,14 +167,14 @@ def _load_quants(path) -> Tensor:
     return torch.load(path)[0].t()
 
 
-@cache
-def _get_phones(path):
-    _logger.info(str(path))
-    print(path)
-    path = _replace_file_extension(path, ".phn.txt")
-    with open(path, "r", encoding="utf8") as f:
-        content = f.read()
-    return ["<s>"] + content.split() + ["</s>"]
+# @cache
+# def _get_phones(path):
+#     _logger.info(str(path))
+#     print(path)
+#     path = _replace_file_extension(path, ".phn.txt")
+#     with open(path, "r", encoding="utf8") as f:
+#         content = f.read()
+#     return ["<s>"] + content.split() + ["</s>"]
 
 
 def _interleaved_reorder(l, fn):
@@ -135,6 +195,10 @@ def _interleaved_reorder(l, fn):
 @cache
 def _validate(path, min_phones, max_phones):
     return _valid_cache.validate(path, min_phones, max_phones)
+
+@cache
+def _get_phones(path):
+    return _phoneme_cache.get_phones(path)
 
 
 class VALLEDatset(Dataset):
