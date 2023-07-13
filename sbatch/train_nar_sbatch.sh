@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=train_nar
 #SBATCH -c 16
-#SBATCH --mem=32g
+#SBATCH --mem=40g
 #SBATCH --time=5-0
 #SBATCH --gres=gpu:1,vmem:24g
 #SBATCH --exclude=gsm-04
