@@ -43,7 +43,6 @@ class ValidCache:
         if type(self.loaded_data) is not dict:
             self.loaded_data = dict()
 
-        print(self.loaded_data)
 
     def write_cached(self, file_path: str, value: bool):
         self.counter += 1
@@ -51,7 +50,6 @@ class ValidCache:
 
         if self.counter % 1000 == 0:
             self.backup()
-            print("--- BACK UP ---")
 
 
     def backup(self):
@@ -60,10 +58,8 @@ class ValidCache:
 
     def validate(self, path, min_phones, max_phones):
         if str(path) in self.loaded_data.keys():
-            print("using cache")
             return self.loaded_data[str(path)]
         else:
-            print("calculating and saving")
             result = ValidCache._validate(path, min_phones, max_phones)
             self.write_cached(str(path), result)
             return result
@@ -107,7 +103,6 @@ class PhonesCache:
             with open(self.path, 'rb') as handle:
                 self.loaded_data = pickle.load(handle)
 
-        print(self.loaded_data)
 
     def write_cached(self, file_path: str, value: List[str]):
         self.counter += 1
@@ -115,7 +110,6 @@ class PhonesCache:
 
         if self.counter % 1000 == 0:
             self.backup()
-            print("--- BACK UP ---")
 
 
     def backup(self):
@@ -124,18 +118,14 @@ class PhonesCache:
 
     def get_phones(self, path):
         if str(path) in self.loaded_data.keys():
-            print("phones - using cache")
             return self.loaded_data[str(path)]
         else:
-            print("phones - calculating and saving")
             result = PhonesCache._get_phones(path)
             self.write_cached(str(path), result)
             return result
 
     @staticmethod
     def _get_phones(path):
-        _logger.info(str(path))
-        print(path)
         path = _replace_file_extension(path, ".phn.txt")
         with open(path, "r", encoding="utf8") as f:
             content = f.read()
