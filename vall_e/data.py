@@ -29,8 +29,10 @@ class ValidCache:
     1 for valid
     """
 
+
     def __init__(self, path):
         self.path = path
+        self.counter = 0
 
         if path is None:
             self.loaded_data = dict()
@@ -43,7 +45,15 @@ class ValidCache:
         print(self.loaded_data)
 
     def write_cached(self, file_path: str, value: bool):
+        self.counter += 1
         self.loaded_data[str(file_path)] = value
+
+        if self.counter % 1000 == 0:
+            self.backup()
+            print("--- BACK UP ---")
+
+
+    def backup(self):
         with open(self.path, 'wb') as handle:
             pickle.dump(self.loaded_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -273,7 +283,7 @@ def _create_dataloader(dataset, training):
     )
 
 
-def _load_train_val_paths():
+def  _load_train_val_paths():
     paths = []
     train_paths = []
     val_paths = []
