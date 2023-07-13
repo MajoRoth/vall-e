@@ -122,7 +122,7 @@ class PhonesCache:
         with open(self.path, 'wb') as handle:
             pickle.dump(self.loaded_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    def get_phones(self, path, min_phones, max_phones):
+    def get_phones(self, path):
         if str(path) in self.loaded_data.keys():
             print("phones - using cache")
             return self.loaded_data[str(path)]
