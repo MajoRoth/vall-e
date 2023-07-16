@@ -49,6 +49,7 @@ class ValidCache:
         self.loaded_data[str(file_path)] = value
 
         if self.counter % 1000 == 0:
+            print("ValidCache Backup")
             self.backup()
 
 
@@ -109,6 +110,7 @@ class PhonesCache:
         self.loaded_data[str(file_path)] = value
 
         if self.counter % 1000 == 0:
+            print("PhonesCache Backup")
             self.backup()
 
 
