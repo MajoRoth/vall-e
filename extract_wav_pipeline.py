@@ -77,6 +77,7 @@ def ckpt_pipeline(writer, cfg):
             sentence = "היי, זה משפט לדוגמא כדי שאני אשמע אם המודל מדבר טוב"
 
             for ref in [cfg.reference_path_hayot, cfg.reference_path_amit, cfg.reference_path_shahar]:
+                print(ref)
                 file_name = ref.split("/")[-1]
                 file_name_without_wav = file_name.split(".")[0]
                 wav_name = f"test_{file_name_without_wav}_{ckpt_name}.wav"
