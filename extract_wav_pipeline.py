@@ -91,7 +91,7 @@ def ckpt_pipeline(writer, cfg):
 
 
                 print(f"CREATED WAV test_{file_name_without_wav}_{ckpt_name}")
-                wav, sr = torchaudio.load(output_path)
+                wav, sr = torchaudio.load(ref)
 
                 print(f"LOADED WAV {wav_name}")
                 writer.add_audio(tag=f"{wav_name}", snd_tensor=wav,
