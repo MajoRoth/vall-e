@@ -21,6 +21,10 @@ from .sampler import Sampler
 """
     MY CLASS
 """
+
+USE_CACHE = False
+
+
 class ValidCache:
     """
     format is a .txt file:
@@ -134,12 +138,19 @@ class PhonesCache:
         return ["<s>"] + content.split() + ["</s>"]
 
 
+if USE_CACHE:
+    _valid_cache = ValidCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache.pickle")
+    _phoneme_cache = PhonesCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache_phoneme.pickle")
+else:
+    _valid_cache = None
+    _phoneme_cache = None
+
+
 
 torch.multiprocessing.set_sharing_strategy("file_system")
 
 _logger = logging.getLogger(__name__)
-_valid_cache = ValidCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache.pickle")
-_phoneme_cache = PhonesCache(r"/cs/labs/adiyoss/amitroth/vall-e/cache_phoneme.pickle")
+
 
 
 def _replace_file_extension(path, suffix):
@@ -186,11 +197,15 @@ def _interleaved_reorder(l, fn):
 
 @cache
 def _validate(path, min_phones, max_phones):
-    return _valid_cache.validate(path, min_phones, max_phones)
+    if USE_CACHE:
+        return _valid_cache.validate(path, min_phones, max_phones)
+    return ValidCache._validate(path, min_phones, max_phones)
 
 @cache
 def _get_phones(path):
-    return _phoneme_cache.get_phones(path)
+    if USE_CACHE:
+        return _phoneme_cache.get_phones(path)
+    return PhonesCache._get_phones(path)
 
 
 class VALLEDatset(Dataset):

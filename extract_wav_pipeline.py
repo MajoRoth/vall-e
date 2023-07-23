@@ -122,7 +122,7 @@ def upload_wav(writer, cfg):
                   device="cuda")
 
         print(f"CREATED WAV test_{file_name_without_wav}_{ckpt_name}")
-        wav, sr = torchaudio.load(ref)
+        wav, sr = torchaudio.load(output_path)
 
         print(f"LOADED WAV {wav_name}")
         writer.add_audio(tag=f"{wav_name}", snd_tensor=wav,
