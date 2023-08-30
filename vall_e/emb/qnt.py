@@ -14,12 +14,12 @@ from encodec.utils import convert_audio
 from torch import Tensor
 from tqdm import tqdm
 
-from ..config import cfg
+# from ..config import cfg
 
 @cache
 def _load_model(device="cuda"):
     # Instantiate a pretrained EnCodec model
-    assert cfg.sample_rate == 24_000
+    # assert cfg.sample_rate == 24_000
     model = EncodecModel.encodec_model_24khz()
     model.set_target_bandwidth(6.0)
     model.to(device)
