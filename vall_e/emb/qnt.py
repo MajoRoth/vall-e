@@ -94,4 +94,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+
+    qnt = encode_from_file("/cs/dataset/Download/adiyoss/podcasts/hayot_kis/saspeech_gold_standard/wavs_24k/gold_015_line_052.wav")
+    decode_to_file(qnt[0], "/cs/labs/adiyoss/amitroth/vall-e/encoded.wav")

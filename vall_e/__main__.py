@@ -35,7 +35,6 @@ def main(text=None, reference=None, out_path=None, ar_ckpt=None, nar_ckpt=None, 
     proms = rearrange(proms, "1 l t -> t l")
 
     phns = torch.tensor([symmap[p] for p in g2p.encode(text)])
-    print(f"phones - {phns} - {g2p.encode(text)}")
 
     proms = to_device(proms, device)
     phns = to_device(phns, device)
